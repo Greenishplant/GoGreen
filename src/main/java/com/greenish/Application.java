@@ -3,83 +3,93 @@ package com.greenish;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SpringBootApplication
 @RestController
-@RequestMapping("/api/v1")
-@CrossOrigin(origins="*")
+@RequestMapping("/api")
+@CrossOrigin(origins = "*")
 public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
-    private static List<Map<String,Object>> products = new ArrayList<>();
-    private static Map<String,Map<String,Object>> orders = new ConcurrentHashMap<>();
+    private static Map<String, Map<String, Object>> users = new ConcurrentHashMap<>();
+    private static Map<String, Map<String, Object>> orders = new ConcurrentHashMap<>();
+    private static List<Map<String, Object>> products = new ArrayList<>();
 
-    static{
-        addProduct(1,"AI Smart Plant","Indoor",2499,4.8);
-        addProduct(2,"Premium Monstera","Premium",3999,4.9);
-        addProduct(3,"Snake Plant Pro","Eco",1999,4.7);
-        addProduct(4,"Ficus Enterprise","Luxury",5999,5.0);
+    static {
+        addProduct("Money Plant", 299);
+        addProduct("Snake Plant", 399);
+        addProduct("Aloe Vera", 199);
+        addProduct("Peace Lily", 499);
+        addProduct("Bamboo Plant", 349);
     }
 
-    private static void addProduct(int id,String name,String cat,double price,double rating){
-        Map<String,Object> p=new HashMap<>();
-        p.put("id",id);
-        p.put("name",name);
-        p.put("category",cat);
-        p.put("price",price);
-        p.put("rating",rating);
+    private static void addProduct(String name, int price) {
+        Map<String, Object> p = new HashMap<>();
+        p.put("id", UUID.randomUUID().toString());
+        p.put("name", name);
+        p.put("price", price);
+        p.put("stock", 50);
         products.add(p);
     }
 
+    // OTP Login
+    @PostMapping("/login")
+    public Map<String, Object> login(@RequestBody Map<String, String> body) {
+        String phone = body.get("phone");
+        String name = body.get("name");
+
+        Map<String, Object> user = new HashMap<>();
+        user.put("phone", phone);
+        user.put("name", name);
+        user.put("role", phone.equals("9999999999") ? "ADMIN" : "USER");
+
+        users.put(phone, user);
+
+        return user;
+    }
+
     @GetMapping("/products")
-    public List<Map<String,Object>> getProducts(){
+    public List<Map<String, Object>> getProducts() {
         return products;
     }
 
-    @PostMapping("/checkout")
-    public Map<String,Object> checkout(@RequestBody Map<String,Object> payload){
-        String orderId="NAVYA-"+System.currentTimeMillis();
-        payload.put("orderId",orderId);
-        payload.put("status","PLACED");
-        orders.put(orderId,payload);
+    @PostMapping("/order")
+    public Map<String, Object> placeOrder(@RequestBody Map<String, Object> payload) {
+        String id = "GREENISH-" + System.currentTimeMillis();
+        payload.put("orderId", id);
+        payload.put("status", "PLACED");
+        orders.put(id, payload);
 
-        return Map.of("success",true,"orderId",orderId);
+        Map<String, Object> res = new HashMap<>();
+        res.put("message", "Order Successful");
+        res.put("orderId", id);
+        return res;
     }
 
     @GetMapping("/orders")
-    public Collection<Map<String,Object>> getOrders(){
+    public Collection<Map<String, Object>> getAllOrders() {
         return orders.values();
     }
 
-    @PostMapping("/update-status/{id}")
-    public Map<String,String> updateStatus(@PathVariable String id,@RequestParam String status){
-        if(orders.containsKey(id)){
-            orders.get(id).put("status",status);
-        }
-        return Map.of("message","Updated");
-    }
-
     @GetMapping("/track/{id}")
-    public Map<String,Object> track(@PathVariable String id){
-        return orders.getOrDefault(id,Map.of("error","Not Found"));
+    public Map<String, Object> track(@PathVariable String id) {
+        return orders.getOrDefault(id, Map.of("error", "Order Not Found"));
     }
 
-    @GetMapping("/admin")
-    public Map<String,Object> analytics(){
-        double revenue=orders.values().stream()
-                .mapToDouble(o->Double.parseDouble(o.get("total").toString()))
-                .sum();
+    @PostMapping("/admin/update-status")
+    public Map<String, String> updateStatus(@RequestBody Map<String, String> body) {
+        String id = body.get("orderId");
+        String status = body.get("status");
 
-        return Map.of(
-                "totalOrders",orders.size(),
-                "revenue",revenue,
-                "products",products.size()
-        );
+        if (orders.containsKey(id)) {
+            orders.get(id).put("status", status);
+            return Map.of("message", "Updated");
+        }
+        return Map.of("message", "Order Not Found");
     }
 }
