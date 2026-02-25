@@ -33,10 +33,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; transition: background 0.3s, color 0.3s; }
 
-        /* 3D Canvas Background */
         #canvas-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
 
-        /* Overlays & Modals */
         .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 2000; }
         .glass-box { background: var(--glass-bg); color: var(--text-color); padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); width: 90%; max-width: 450px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
         .glass-box input, .glass-box select, .search-box input, .glass-box textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border); border-radius: 10px; outline: none; background: var(--bg-color); color: var(--text-color); }
@@ -47,30 +45,29 @@
         .close-icon:hover { color: #cc0000; transform: scale(1.1); }
         .admin-link { margin-top: 15px; font-size: 13px; cursor: pointer; color: var(--primary); font-weight: 600; text-decoration: underline; }
 
-        /* Header & Footer */
         header { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--glass-bg); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .logo { font-size: 24px; font-weight: 700; color: var(--primary); display: flex; align-items: center; }
         nav a { margin-left: 20px; text-decoration: none; color: var(--text-color); font-weight: 600; transition: 0.3s; }
         nav a:hover { color: var(--primary); }
         .cart-btn { background: var(--primary); color: white; padding: 8px 15px; border-radius: 20px; }
+        
         #mainFooter { background: #081c15; color: #b7e4c7; padding: 40px 50px; margin-top: 50px; }
         .footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
         .footer-content p { font-size: 14px; margin-top: 10px; cursor: pointer; }
         .footer-bottom { text-align: center; margin-top: 30px; border-top: 1px solid #1b4332; padding-top: 20px; font-size: 14px; }
 
-        /* Main Pages */
         .page-section { min-height: 80vh; display: flex; align-items: center; padding: 40px 50px; }
         .hero-content { max-width: 500px; }
         .badge { background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; }
         .hero-content h1 { font-size: 4rem; margin: 20px 0; line-height: 1.1; color: var(--text-color); }
         .highlight { color: var(--primary); }
 
-        /* Shop Grid & Filters */
         .shop-container { width: 100%; background: var(--glass-bg); padding: 30px; border-radius: 20px; backdrop-filter: blur(10px); }
         .search-box { display: flex; align-items: center; gap: 10px; background: var(--bg-color); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--border); }
         .search-box input { border: none; margin: 0; padding: 5px; }
         .filter-btn { padding: 8px 20px; border: none; border-radius: 20px; background: var(--bg-color); color: var(--text-color); cursor: pointer; font-weight: 600; border: 1px solid var(--border); transition: 0.3s;}
         .filter-btn.active, .filter-btn:hover { background: var(--primary); color: white; }
+        
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; margin-top: 25px; }
         .product-card { background: var(--card-bg); padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; transition: 0.3s; cursor: pointer; position: relative; border: 1px solid var(--border);}
         .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
@@ -79,7 +76,6 @@
         .wish-icon:hover { transform: scale(1.1); }
         .wish-icon.active { color: #ff4d4d; }
 
-        /* Admin Panel */
         .admin-sidebar { width: 250px; background: #081c15; color: white; padding: 30px; display: flex; flex-direction: column; gap: 15px; }
         .admin-sidebar a { color: #b7e4c7; text-decoration: none; font-size: 16px; transition: 0.3s; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px;}
         .admin-sidebar a:hover, .admin-sidebar a.active { background: #1b4332; color: white; font-weight: bold; }
@@ -127,9 +123,7 @@
             <a href="#" onclick="showSection('shopSection')">Shop</a>
             <a href="#" onclick="showSection('wishlistSection')">❤️ Wishlist (<span id="wishCount">0</span>)</a>
             <a href="#" onclick="showMyOrders()">📦 My Orders</a>
-            <a href="#" class="cart-btn" onclick="openCart()">
-                <i class="fa-solid fa-cart-shopping"></i> Cart (<span id="cartCount">0</span>)
-            </a>
+            <a href="#" class="cart-btn" onclick="openCart()"><i class="fa-solid fa-cart-shopping"></i> Cart (<span id="cartCount">0</span>)</a>
             <a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </nav>
     </header>
@@ -312,54 +306,54 @@
     </section>
 
     <script>
-        // --- Database: Premium A to Z Catalog (New Placeholders) ---
+        // --- Database: Real High Quality Pexels Images (100% Unblockable) ---
         let products = [
             { id: 1, name: "Monstera Deliciosa", category: "Indoor", price: 499, stock: 10,
-              img: "https://placehold.co/500x500/2d6a4f/ffffff?text=Monstera+Plant",
+              img: "https://images.pexels.com/photos/3125195/pexels-photo-3125195.jpeg?auto=compress&cs=tinysrgb&w=500",
               tags: ["Air Purifying"], sun: "☀️ Medium", water: "💧 Weekly" },
 
             { id: 2, name: "Snake Plant", category: "Indoor", price: 299, stock: 5,
-              img: "https://placehold.co/500x500/40916c/ffffff?text=Snake+Plant",
+              img: "https://images.pexels.com/photos/2123482/pexels-photo-2123482.jpeg?auto=compress&cs=tinysrgb&w=500",
               tags: ["Low Maintenance"], sun: "☀️ Low", water: "💧 Bi-Weekly" },
 
             { id: 3, name: "Ficus Bonsai", category: "Indoor", price: 899, stock: 2,
-              img: "https://placehold.co/500x500/1b4332/ffffff?text=Ficus+Bonsai",
+              img: "https://images.pexels.com/photos/3273934/pexels-photo-3273934.jpeg?auto=compress&cs=tinysrgb&w=500",
               tags: ["Bonsai"], sun: "☀️ Bright", water: "💧 Frequent" },
 
             { id: 4, name: "Aloe Vera", category: "Outdoor", price: 199, stock: 20,
-              img: "https://placehold.co/500x500/52b788/ffffff?text=Aloe+Vera",
+              img: "https://images.pexels.com/photos/1334605/pexels-photo-1334605.jpeg?auto=compress&cs=tinysrgb&w=500",
               tags: ["Medicinal"], sun: "☀️ Direct", water: "💧 Bi-Weekly" },
 
             { id: 5, name: "Areca Palm", category: "Outdoor", price: 699, stock: 0,
-              img: "https://placehold.co/500x500/74c69d/ffffff?text=Areca+Palm",
+              img: "https://images.pexels.com/photos/1084199/pexels-photo-1084199.jpeg?auto=compress&cs=tinysrgb&w=500",
               tags: ["Big Size"], sun: "☀️ Indirect", water: "💧 Weekly" },
 
             { id: 6, name: "Red Rose Plant", category: "Flowers", price: 349, stock: 15,
-              img: "https://placehold.co/500x500/d90429/ffffff?text=Red+Rose",
+              img: "https://images.pexels.com/photos/56866/rosa-rubiginosa-marguerite-detail-pink-56866.jpeg?auto=compress&cs=tinysrgb&w=500",
               tags: ["Romantic"], sun: "☀️ Full Sun", water: "💧 Daily" },
 
             { id: 7, name: "Sunflower Pot", category: "Flowers", price: 250, stock: 8,
-              img: "https://placehold.co/500x500/ffbe0b/000000?text=Sunflower",
+              img: "https://images.pexels.com/photos/54630/japanese-sunflower-asteraceae-plant-54630.jpeg?auto=compress&cs=tinysrgb&w=500",
               tags: ["Bright"], sun: "☀️ Full Sun", water: "💧 Daily" },
 
             { id: 8, name: "Mixed Flower Seeds", category: "Seeds", price: 150, stock: 50,
-              img: "https://placehold.co/500x500/f77f00/ffffff?text=Flower+Seeds",
+              img: "https://images.pexels.com/photos/1083617/pexels-photo-1083617.jpeg?auto=compress&cs=tinysrgb&w=500",
               tags: ["Pack of 5"], sun: "☀️ Medium", water: "💧 Keep moist" },
 
             { id: 9, name: "Organic Basil Seeds", category: "Seeds", price: 99, stock: 30,
-              img: "https://placehold.co/500x500/2a9d8f/ffffff?text=Basil+Seeds",
+              img: "https://images.pexels.com/photos/1080400/pexels-photo-1080400.jpeg?auto=compress&cs=tinysrgb&w=500",
               tags: ["Herbs"], sun: "☀️ Full Sun", water: "💧 Daily" },
 
             { id: 10, name: "Premium Ceramic Pot", category: "Accessories", price: 399, stock: 12,
-              img: "https://placehold.co/500x500/adb5bd/000000?text=Ceramic+Pot",
+              img: "https://images.pexels.com/photos/6601444/pexels-photo-6601444.jpeg?auto=compress&cs=tinysrgb&w=500",
               tags: ["Decor"], sun: "N/A", water: "N/A" },
 
             { id: 11, name: "Terracotta Pots (Set)", category: "Accessories", price: 299, stock: 25,
-              img: "https://placehold.co/500x500/b08968/ffffff?text=Terracotta+Pots",
+              img: "https://images.pexels.com/photos/4505166/pexels-photo-4505166.jpeg?auto=compress&cs=tinysrgb&w=500",
               tags: ["Classic"], sun: "N/A", water: "N/A" },
 
             { id: 12, name: "Gardening Tool Kit", category: "Accessories", price: 549, stock: 5,
-              img: "https://placehold.co/500x500/6c757d/ffffff?text=Tool+Kit",
+              img: "https://images.pexels.com/photos/4202924/pexels-photo-4202924.jpeg?auto=compress&cs=tinysrgb&w=500",
               tags: ["Steel"], sun: "N/A", water: "N/A" }
         ];
 
@@ -369,7 +363,6 @@
         let totalRevenue = 0;
         let discountApplied = false;
 
-        // --- Initialization ---
         window.onload = () => {
             gsap.from(".glass-box", { y: -50, opacity: 0, duration: 0.8, ease: "back.out" });
             renderProducts('All');
@@ -396,7 +389,7 @@
                 document.getElementById("mainHeader").style.display = "flex";
                 document.getElementById("mainContentWrapper").style.display = "block";
                 
-                // Force load shop to fix blank screen issue
+                // FORCE LOAD SHOP TO FIX BLANK SCREEN BUG
                 showSection('shopSection');
             }});
         }
@@ -415,11 +408,11 @@
         function logout() { location.reload(); }
         function logoutAdmin() { location.reload(); }
 
+        // BUG FIX: Removed GSAP from here to ensure text is never invisible!
         function showSection(sectionId) {
             document.querySelectorAll('.page-section').forEach(sec => sec.style.display = 'none');
             const target = document.getElementById(sectionId);
             target.style.display = 'flex';
-            gsap.from(target, { opacity: 0, y: 20, duration: 0.5 });
             if(sectionId === 'wishlistSection') renderWishlist();
         }
 
@@ -519,7 +512,7 @@
         }
         function closeProductModal() { gsap.to("#productOverlay", { opacity: 0, duration: 0.3, onComplete: () => { document.getElementById("productOverlay").style.display = "none"; }}); }
 
-        // --- Cart System & Ghost Bug Fix ---
+        // --- Cart System ---
         function addToCart(id) {
             const p = products.find(x => x.id === id);
             if(p && p.stock > 0) {
@@ -561,11 +554,8 @@
         
         function removeItem(index, pId) { 
             cart.splice(index, 1); 
-            // Safety check: Agar admin ne delete nahi kiya hai tabhi stock wapas add karo
             let restoredProduct = products.find(x => x.id === pId);
-            if(restoredProduct) {
-                restoredProduct.stock++; 
-            }
+            if(restoredProduct) { restoredProduct.stock++; }
             document.getElementById("cartCount").innerText = cart.length; 
             updateCartUI(); 
             renderProducts('All', document.getElementById("searchInput").value);
@@ -607,11 +597,9 @@
                 let cartTotalValue = parseInt(document.getElementById("cartTotal").innerText);
                 let randomOrderId = Math.floor(Math.random() * 90000) + 10000;
                 
-                // Add to Customer Orders
                 myOrders.push({ id: randomOrderId, items: cart.length, total: cartTotalValue, status: 'Processing', date: date });
                 totalRevenue += cartTotalValue;
                 
-                // Add to Admin Orders Live
                 let adminTable = document.getElementById("adminOrderTable");
                 let newAdminOrder = `
                     <tr id="row-${randomOrderId}">
@@ -629,7 +617,6 @@
                 `;
                 adminTable.innerHTML = newAdminOrder + adminTable.innerHTML;
                 
-                // Update Admin Inventory permanently
                 renderAdminProducts();
                 updateAdminStats();
 
