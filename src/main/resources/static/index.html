@@ -1,238 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Greenish Plant - Enterprise 3D Store</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* CSS DITTO SAME AS OLD UI + NEW SECTIONS */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-        :root { --primary: #2d6a4f; --bg: #eaf4f0; --glass: rgba(255, 255, 255, 0.95); --text: #1b4332; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); overflow-x: hidden; }
-        #canvas-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--glass); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        nav { display: flex; gap: 20px; align-items: center; }
-        nav a { cursor: pointer; font-weight: 600; color: var(--text); text-decoration: none; }
-        .page-section { min-height: 90vh; padding: 50px; display: none; animation: fadeIn 0.5s ease; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; margin-top: 25px; }
-        .product-card { background: white; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid #ddd; transition: 0.3s; position: relative; }
-        .tag-badge { position: absolute; top: 10px; left: 10px; background: var(--primary); color: white; padding: 3px 10px; border-radius: 10px; font-size: 10px; }
-        .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .filter-btn { padding: 8px 15px; border-radius: 20px; border: 1px solid var(--primary); background: white; cursor: pointer; font-size: 12px; }
-        .filter-btn.active { background: var(--primary); color: white; }
-        .btn-primary { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 5000; padding: 20px; }
-        .modal { background: var(--glass); padding: 30px; border-radius: 25px; width: 100%; max-width: 450px; text-align: center; }
-        footer { background: #081c15; color: white; padding: 40px; text-align: center; margin-top: 50px; }
-        @media (max-width: 768px) { header { flex-direction: column; padding: 15px; } .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greenish Plant | Premium Experience</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+/* ================= GLOBAL ================= */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+scroll-behavior:smooth;
+}
+
+body{
+background:#0f2027;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+overflow-x:hidden;
+}
+
+/* ================= FLOATING LIGHTS ================= */
+
+body::before{
+content:'';
+position:fixed;
+width:600px;
+height:600px;
+background:radial-gradient(circle,#2d6a4f55,transparent);
+top:-200px;
+left:-200px;
+animation:float1 8s infinite alternate;
+z-index:-1;
+}
+
+body::after{
+content:'';
+position:fixed;
+width:500px;
+height:500px;
+background:radial-gradient(circle,#95d5b255,transparent);
+bottom:-200px;
+right:-200px;
+animation:float2 10s infinite alternate;
+z-index:-1;
+}
+
+@keyframes float1{
+0%{transform:translate(0,0);}
+100%{transform:translate(150px,100px);}
+}
+
+@keyframes float2{
+0%{transform:translate(0,0);}
+100%{transform:translate(-150px,-120px);}
+}
+
+/* ================= HEADER ================= */
+
+header{
+position:fixed;
+top:0;
+width:100%;
+padding:20px 60px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(20px);
+border-bottom:1px solid rgba(255,255,255,0.15);
+z-index:1000;
+}
+
+.logo{
+font-size:24px;
+font-weight:800;
+letter-spacing:1px;
+}
+
+nav a{
+margin-left:30px;
+text-decoration:none;
+color:white;
+font-weight:500;
+transition:0.3s;
+}
+
+nav a:hover{
+color:#95d5b2;
+}
+
+/* ================= HERO ================= */
+
+.hero{
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+padding-top:80px;
+}
+
+.hero h1{
+font-size:60px;
+font-weight:800;
+background:linear-gradient(to right,#95d5b2,#ffffff);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+margin-bottom:20px;
+}
+
+.hero p{
+max-width:650px;
+opacity:0.85;
+margin-bottom:30px;
+font-size:18px;
+}
+
+.btn{
+padding:15px 35px;
+border-radius:40px;
+border:none;
+cursor:pointer;
+font-weight:600;
+font-size:15px;
+background:linear-gradient(45deg,#2d6a4f,#40916c);
+color:white;
+transition:0.4s;
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+
+.btn:hover{
+transform:translateY(-5px);
+box-shadow:0 15px 40px rgba(0,0,0,0.7);
+}
+
+/* ================= PRODUCTS ================= */
+
+.section{
+padding:120px 80px;
+}
+
+.section h2{
+text-align:center;
+font-size:38px;
+margin-bottom:60px;
+}
+
+.products{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:40px;
+}
+
+.card{
+background:rgba(255,255,255,0.07);
+border-radius:25px;
+padding:20px;
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.15);
+transition:0.4s;
+transform-style:preserve-3d;
+}
+
+.card:hover{
+transform:rotateY(6deg) rotateX(6deg) scale(1.05);
+box-shadow:0 20px 50px rgba(0,0,0,0.6);
+}
+
+.card img{
+width:100%;
+height:240px;
+object-fit:cover;
+border-radius:20px;
+margin-bottom:15px;
+}
+
+.card h3{
+font-size:22px;
+margin-bottom:5px;
+}
+
+.price{
+font-weight:700;
+color:#95d5b2;
+margin:10px 0;
+}
+
+.add-btn{
+padding:10px 25px;
+border-radius:25px;
+border:none;
+cursor:pointer;
+background:#95d5b2;
+color:#1b4332;
+font-weight:600;
+transition:0.3s;
+}
+
+.add-btn:hover{
+background:white;
+}
+
+/* ================= FOOTER ================= */
+
+footer{
+margin-top:100px;
+padding:50px;
+text-align:center;
+background:rgba(0,0,0,0.4);
+border-top:1px solid rgba(255,255,255,0.1);
+}
+
+footer p{
+opacity:0.8;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:768px){
+
+header{
+padding:15px 20px;
+}
+
+.hero h1{
+font-size:35px;
+}
+
+.section{
+padding:80px 30px;
+}
+
+}
+
+</style>
 </head>
 <body>
 
-    <div id="canvas-container"></div>
+<header>
+<div class="logo">🌿 Greenish</div>
+<nav>
+<a href="#">Home</a>
+<a href="#shop">Shop</a>
+<a href="#">About</a>
+<a href="#">Contact</a>
+</nav>
+</header>
 
-    <div id="loginOverlay" class="overlay" style="display: flex;">
-        <div class="modal">
-            <h2>🌿 Greenish Plant</h2>
-            <input type="number" id="phone" placeholder="Enter Mobile" style="width:100%; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ccc;">
-            <button class="btn-primary" onclick="Auth.login()">Login</button>
-            <p onclick="adminLogin()" style="margin-top:15px; cursor:pointer; font-size:12px;">Admin Access</p>
-        </div>
-    </div>
+<section class="hero">
+<h1>Nature Meets Technology</h1>
+<p>Experience a new generation plant store built with premium design,
+smooth realism and enterprise architecture.</p>
+<button class="btn">Explore Collection</button>
+</section>
 
-    <header id="mainHeader" style="display:none">
-        <div class="logo">🌿 Greenish</div>
-        <nav>
-            <a onclick="View.show('home')">Home</a>
-            <a onclick="View.show('shop')">Shop</a>
-            <a onclick="View.show('about')">About</a>
-            <a onclick="View.show('contact')">Contact</a>
-            <a onclick="Cart.open()" style="background:var(--primary); color:white; padding:5px 15px; border-radius:20px;">Cart (<span id="cartCount">0</span>)</a>
-            <a onclick="location.reload()">Logout</a>
-        </nav>
-    </header>
+<section class="section" id="shop">
+<h2>Premium Collection</h2>
 
-    <div id="app" style="display:none">
-        <section id="home" class="page-section" style="display:block">
-            <h1>Premium 3D <br> <span style="color:var(--primary)">Plant Experience</span></h1>
-            <p>Sustainable gardening meets Java-SQL technology.</p>
-            <button class="btn-primary" style="width:200px; margin-top:20px;" onclick="View.show('shop')">Start Shopping</button>
-        </section>
+<div class="products">
 
-        <section id="shop" class="page-section">
-            <div class="filter-bar">
-                <button class="filter-btn active" onclick="Shop.filter('All', this)">All</button>
-                <button class="filter-btn" onclick="Shop.filter('Indoor', this)">Indoor</button>
-                <button class="filter-btn" onclick="Shop.filter('Outdoor', this)">Outdoor</button>
-                <button class="filter-btn" onclick="Shop.filter('Pet-Friendly', this)">🐶 Pet Friendly</button>
-                <button class="filter-btn" onclick="Shop.filter('Low-Light', this)">☀️ Low-Light</button>
-            </div>
-            <div class="product-grid" id="productGrid"></div>
-        </section>
+<div class="card">
+<img src="https://images.pexels.com/photos/3125195/pexels-photo-3125195.jpeg">
+<h3>Monstera</h3>
+<p class="price">₹499</p>
+<button class="add-btn">Add to Cart</button>
+</div>
 
-        <section id="about" class="page-section">
-            <h2>About Greenish</h2>
-            <p>We are a student-led initiative delivering fresh plants from Virar to across India. Our goal is to make gardening accessible for everyone.</p>
-        </section>
+<div class="card">
+<img src="https://images.pexels.com/photos/2123482/pexels-photo-2123482.jpeg">
+<h3>Snake Plant</h3>
+<p class="price">₹299</p>
+<button class="add-btn">Add to Cart</button>
+</div>
 
-        <section id="contact" class="page-section">
-            <h2>Contact Us</h2>
-            <p>📧 Email: support@greenish.com<br>📞 Phone: +91 9876543210<br>📍 Location: Virar, Maharashtra</p>
-        </section>
+<div class="card">
+<img src="https://images.pexels.com/photos/3273934/pexels-photo-3273934.jpeg">
+<h3>Ficus Bonsai</h3>
+<p class="price">₹899</p>
+<button class="add-btn">Add to Cart</button>
+</div>
 
-        <section id="orders" class="page-section">
-            <h2>📦 Order Records (SQL)</h2>
-            <div id="orderList"></div>
-        </section>
-    </div>
+<div class="card">
+<img src="https://images.pexels.com/photos/1084199/pexels-photo-1084199.jpeg">
+<h3>Areca Palm</h3>
+<p class="price">₹699</p>
+<button class="add-btn">Add to Cart</button>
+</div>
 
-    <div id="cartModal" class="overlay">
-        <div class="modal">
-            <h2>Your Session Cart</h2>
-            <div id="cartItems" style="text-align:left; margin:15px 0;"></div>
-            <h3>Total: ₹<span id="total">0</span></h3>
-            <button class="btn-primary" style="margin-top:15px;" onclick="Cart.checkout()">Proceed</button>
-            <button class="btn-primary" style="background:#555; margin-top:10px;" onclick="Cart.close()">Close</button>
-        </div>
-    </div>
+</div>
+</section>
 
-    <div id="payModal" class="overlay">
-        <div class="modal" style="text-align:left">
-            <h2>Checkout Details</h2>
-            <label>Address:</label>
-            <textarea id="addr" style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px;"></textarea>
-            <div style="text-align:center"><img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=upi://pay?pa=vivek@upi"></div>
-            <button class="btn-primary" onclick="SQL.commit()">Confirm SQL INSERT</button>
-        </div>
-    </div>
+<footer>
+<p>© 2026 Greenish Enterprise</p>
+<p style="font-size:12px;">Built with Spring Boot & PostgreSQL</p>
+</footer>
 
-    <footer id="footer" style="display:none">
-        <p>&copy; 2026 Greenish Plants | Vivek Sharma</p>
-        <p style="font-size:10px; opacity:0.5;">Powered by Java Spring Boot & PostgreSQL</p>
-    </footer>
-
-    <script>
-        /* 🛠️ SYSTEM SERVICES */
-        const Auth = {
-            login() { 
-                if(document.getElementById('phone').value.length === 10) {
-                    document.getElementById('loginOverlay').style.display='none';
-                    document.getElementById('mainHeader').style.display='flex';
-                    document.getElementById('app').style.display='block';
-                    document.getElementById('footer').style.display='block';
-                    // Load Address from Memory
-                    document.getElementById('addr').value = localStorage.getItem('user_addr') || "";
-                } else alert("Invalid Mobile");
-            }
-        };
-
-        const View = {
-            show(id) {
-                document.querySelectorAll('.page-section').forEach(s => s.style.display='none');
-                document.getElementById(id).style.display='block';
-                if(id === 'orders') this.renderSQL();
-            },
-            renderSQL() {
-                let db = JSON.parse(localStorage.getItem('sql_log')) || [];
-                let h = "<table border='1' width='100%' style='border-collapse:collapse'><tr><th>ID</th><th>Total</th></tr>";
-                db.reverse().forEach(o => h += `<tr><td>#${o.id}</td><td>${o.total}</td></tr>`);
-                document.getElementById('orderList').innerHTML = h + "</table>";
-            }
-        };
-
-        const SQL = {
-            async commit() {
-                let addr = document.getElementById('addr').value;
-                if(!addr) return alert("Address Required");
-                localStorage.setItem('user_addr', addr); // Persistent Profile
-
-                let order = {
-                    id: "ORD" + Math.floor(Math.random()*999),
-                    total: document.getElementById('total').innerText,
-                    address: addr,
-                    items: [...cart]
-                };
-
-                try {
-                    // Actual Java API Call
-                    await fetch('/api/checkout', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(order)
-                    });
-                    confetti();
-                    let log = JSON.parse(localStorage.getItem('sql_log')) || [];
-                    log.push(order); localStorage.setItem('sql_log', JSON.stringify(log));
-                    alert("SQL TRANSACTION SUCCESSFUL");
-                    location.reload();
-                } catch(e) { console.error("Server starting..."); }
-            }
-        };
-
-        /* 🛒 CATALOG & CART */
-        let cart = [];
-        const products = [
-            { id: 1, name: "Monstera", cat: "Indoor", price: 499, tag: "Air Purifier", sun: "Low", pet: true, img: "https://images.pexels.com/photos/3125195/pexels-photo-3125195.jpeg?w=400" },
-            { id: 2, name: "Snake Plant", cat: "Indoor", price: 299, tag: "Best Seller", sun: "Low", pet: true, img: "https://images.pexels.com/photos/2123482/pexels-photo-2123482.jpeg?w=400" },
-            { id: 3, name: "Red Rose", cat: "Outdoor", price: 349, tag: "Flowers", sun: "High", pet: false, img: "https://images.pexels.com/photos/736230/pexels-photo-736230.jpeg?w=400" },
-            { id: 4, name: "Ficus Bonsai", cat: "Indoor", price: 899, tag: "Premium", sun: "Medium", pet: false, img: "https://images.pexels.com/photos/3273934/pexels-photo-3273934.jpeg?w=400" },
-            { id: 5, name: "Areca Palm", cat: "Outdoor", price: 699, tag: "Big Size", sun: "Medium", pet: true, img: "https://images.pexels.com/photos/1084199/pexels-photo-1084199.jpeg?w=400" },
-            { id: 6, name: "Sunflower", cat: "Flowers", price: 250, tag: "Seasonal", sun: "High", pet: true, img: "https://images.pexels.com/photos/1366630/pexels-photo-1366630.jpeg?w=400" }
-        ];
-
-        const Shop = {
-            filter(type, btn) {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.render(type);
-            },
-            render(type) {
-                const grid = document.getElementById('productGrid'); grid.innerHTML = "";
-                let list = products;
-                if(type === 'Pet-Friendly') list = products.filter(p => p.pet);
-                else if(type === 'Low-Light') list = products.filter(p => p.sun === 'Low');
-                else if(type !== 'All') list = products.filter(p => p.cat === type);
-
-                list.forEach(p => {
-                    grid.innerHTML += `
-                    <div class="product-card">
-                        <span class="tag-badge">${p.tag}</span>
-                        <img src="${p.img}">
-                        <h3>${p.name}</h3>
-                        <p style="font-size:11px; color:#666;">☀️ ${p.sun} Sun | ${p.pet ? '🐶 Safe' : '⚠️ No Pets'}</p>
-                        <p style="font-weight:bold; color:var(--primary); margin:5px 0;">₹${p.price}</p>
-                        <button class="btn-primary" onclick="Cart.add(${p.id})">Add Object</button>
-                    </div>`;
-                });
-            }
-        };
-
-        const Cart = {
-            add(id) { let p = products.find(x => x.id === id); cart.push(p); document.getElementById('cartCount').innerText = cart.length; alert("Added to Session"); },
-            open() {
-                document.getElementById('cartModal').style.display='flex';
-                let h = ""; let t = 0; cart.forEach(i => { h += `<p>• ${i.name} (₹${i.price})</p>`; t += i.price; });
-                document.getElementById('cartItems').innerHTML = h || "Empty"; document.getElementById('total').innerText = t;
-            },
-            close() { document.getElementById('cartModal').style.display='none'; },
-            checkout() { this.close(); document.getElementById('payModal').style.display='flex'; }
-        };
-
-        function adminLogin() { let id = prompt("Admin:"); let p = prompt("Pass:"); if(id === "Vivek02" && p === "Vivek1234@") View.show('orders'); }
-        window.onload = () => { Shop.render('All'); animate(); };
-
-        /* 🎨 3D GRAPHICS (Ditto Loop) */
-        const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
-        const shape = new THREE.Mesh(new THREE.TorusKnotGeometry(1.5, 0.4, 100, 16), new THREE.MeshStandardMaterial({ color: 0x40916c, wireframe: true }));
-        scene.add(shape); const light = new THREE.PointLight(0xffffff, 1); light.position.set(10, 10, 10); scene.add(light);
-        camera.position.z = 6; function animate() { requestAnimationFrame(animate); shape.rotation.x += 0.005; shape.rotation.y += 0.005; renderer.render(scene, camera); }
-    </script>
 </body>
 </html>
