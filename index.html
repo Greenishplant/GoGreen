@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoGreen 3D - Premium Plants</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+    <div id="loginOverlay" class="overlay">
+        <div class="login-box">
+            <h2>🌿 GoGreen</h2>
+            <p>Welcome to 3D Plant Store</p>
+            
+            <div id="step1">
+                <input type="number" id="mobileInput" placeholder="Enter 10-digit mobile number">
+                <button onclick="sendOTP()">Get OTP</button>
+            </div>
+            
+            <div id="step2" style="display: none;">
+                <p style="font-size: 12px; color: #52796f;">OTP sent to your number</p>
+                <input type="number" id="otpInput" placeholder="Enter 4-digit OTP">
+                <button onclick="verifyOTP()">Verify & Enter</button>
+            </div>
+
+            <p class="admin-link" onclick="adminLogin()">Admin Access</p>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo">🌿 GoGreen</div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">3D Store</a>
+            <a href="#">Categories</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="hero-text">
+            <h1 class="hero-title">Bring Nature <br> <span>To Your Home</span></h1>
+            <p>Experience the first fully interactive 3D plant e-commerce website.</p>
+            <button class="shop-btn">Explore Plants</button>
+        </div>
+        
+        <div id="canvas-container"></div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
