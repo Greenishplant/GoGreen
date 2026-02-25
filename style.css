@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+body { background-color: #f4f9f4; color: #2d6a4f; overflow: hidden; }
+
+/* --- Login Popup (Premium Glass Look) --- */
+.overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
+    display: flex; justify-content: center; align-items: center; z-index: 1000;
+}
+.login-box {
+    background: rgba(255, 255, 255, 0.85); padding: 40px; border-radius: 20px;
+    text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2); width: 350px;
+    transform: scale(0.8); opacity: 0; /* GSAP se animate hoga */
+    border: 1px solid rgba(255,255,255,0.5);
+}
+.login-box h2 { color: #1b4332; margin-bottom: 5px; font-size: 28px; }
+.login-box input {
+    width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #b7e4c7;
+    border-radius: 10px; font-size: 16px; outline: none; background: transparent;
+}
+.login-box button {
+    width: 100%; padding: 12px; background: #2d6a4f; color: white;
+    border: none; border-radius: 10px; font-size: 16px; cursor: pointer;
+    transition: 0.3s; font-weight: bold; box-shadow: 0 4px 15px rgba(45,106,79,0.3);
+}
+.login-box button:hover { background: #1b4332; transform: translateY(-2px); }
+.admin-link { margin-top: 20px; font-size: 12px; cursor: pointer; color: #888; transition: 0.3s; }
+.admin-link:hover { color: #1b4332; font-weight: bold; }
+
+/* --- Main Layout --- */
+header { display: flex; justify-content: space-between; padding: 30px 50px; position: absolute; width: 100%; z-index: 10; }
+.logo { font-size: 26px; font-weight: 800; color: #1b4332; }
+nav a { margin-left: 30px; text-decoration: none; color: #1b4332; font-weight: 600; font-size: 16px; transition: 0.3s; }
+nav a:hover { color: #40916c; }
+
+main { display: flex; align-items: center; height: 100vh; padding: 0 50px; }
+.hero-text { flex: 1; z-index: 10; }
+.hero-title { font-size: 4.5rem; line-height: 1.1; color: #1b4332; }
+.hero-title span { color: #40916c; }
+.hero-text p { margin: 20px 0; font-size: 1.2rem; color: #52796f; max-width: 400px; }
+.shop-btn {
+    padding: 15px 35px; font-size: 18px; background: #1b4332; color: white;
+    border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3); transition: 0.3s; font-weight: 600;
+}
+.shop-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 25px rgba(27, 67, 50, 0.4); }
+
+/* --- 3D Area --- */
+#canvas-container { flex: 1; height: 100vh; display: flex; justify-content: center; align-items: center; }
