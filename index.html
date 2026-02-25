@@ -3,12 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navya Astra Plants - Premium 3D Store</title>
+    <title>Greenish Plant - Premium 3D Store</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        :root {
+            --bg-color: #eaf4f0;
+            --text-color: #1b4332;
+            --primary: #2d6a4f;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: white;
+            --border: #ccc;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --primary: #40916c;
+            --glass-bg: rgba(30, 30, 30, 0.95);
+            --card-bg: #1e1e1e;
+            --border: #444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; transition: background 0.3s, color 0.3s; }
+
+        /* 3D Canvas Background */
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+
+        /* Overlays & Modals */
+        .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .glass-box { background: var(--glass-bg); color: var(--text-color); padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); width: 90%; max-width: 450px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .glass-box input, .glass-box select, .search-box input, .glass-box textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border); border-radius: 10px; outline: none; background: var(--bg-color); color: var(--text-color); }
+        .btn-primary { padding: 12px 25px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .btn-primary:hover { transform: translateY(-2px); opacity: 0.9; }
+        .btn-primary:disabled { background: #888; cursor: not-allowed; transform: none; box-shadow: none; }
+        .close-icon { cursor: pointer; font-size: 20px; color: #ff6b6b; transition: 0.3s; }
+        .close-icon:hover { color: #cc0000; transform: scale(1.1); }
+        .admin-link { margin-top: 15px; font-size: 13px; cursor: pointer; color: var(--primary); font-weight: 600; text-decoration: underline; }
+
+        /* Header & Footer */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--glass-bg); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { font-size: 24px; font-weight: 700; color: var(--primary); display: flex; align-items: center; }
+        nav a { margin-left: 20px; text-decoration: none; color: var(--text-color); font-weight: 600; transition: 0.3s; }
+        nav a:hover { color: var(--primary); }
+        .cart-btn { background: var(--primary); color: white; padding: 8px 15px; border-radius: 20px; }
+        #mainFooter { background: #081c15; color: #b7e4c7; padding: 40px 50px; margin-top: 50px; }
+        .footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+        .footer-content p { font-size: 14px; margin-top: 10px; cursor: pointer; }
+        .footer-bottom { text-align: center; margin-top: 30px; border-top: 1px solid #1b4332; padding-top: 20px; font-size: 14px; }
+
+        /* Main Pages */
+        .page-section { min-height: 80vh; display: flex; align-items: center; padding: 40px 50px; }
+        .hero-content { max-width: 500px; }
+        .badge { background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; }
+        .hero-content h1 { font-size: 4rem; margin: 20px 0; line-height: 1.1; color: var(--text-color); }
+        .highlight { color: var(--primary); }
+
+        /* Shop Grid & Filters */
+        .shop-container { width: 100%; background: var(--glass-bg); padding: 30px; border-radius: 20px; backdrop-filter: blur(10px); }
+        .search-box { display: flex; align-items: center; gap: 10px; background: var(--bg-color); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--border); }
+        .search-box input { border: none; margin: 0; padding: 5px; }
+        .filter-btn { padding: 8px 20px; border: none; border-radius: 20px; background: var(--bg-color); color: var(--text-color); cursor: pointer; font-weight: 600; border: 1px solid var(--border); transition: 0.3s;}
+        .filter-btn.active, .filter-btn:hover { background: var(--primary); color: white; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; margin-top: 25px; }
+        .product-card { background: var(--card-bg); padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; transition: 0.3s; cursor: pointer; position: relative; border: 1px solid var(--border);}
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .product-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; background: #eaf4f0; }
+        .wish-icon { position: absolute; top: 30px; right: 30px; font-size: 22px; color: #ccc; z-index: 10; background: rgba(255,255,255,0.9); padding: 8px; border-radius: 50%; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .wish-icon:hover { transform: scale(1.1); }
+        .wish-icon.active { color: #ff4d4d; }
+
+        /* Admin Panel */
+        .admin-sidebar { width: 250px; background: #081c15; color: white; padding: 30px; display: flex; flex-direction: column; gap: 15px; }
+        .admin-sidebar a { color: #b7e4c7; text-decoration: none; font-size: 16px; transition: 0.3s; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px;}
+        .admin-sidebar a:hover, .admin-sidebar a.active { background: #1b4332; color: white; font-weight: bold; }
+        .stats-grid { display: flex; gap: 20px; margin-top: 20px; }
+        .stat-card { background: var(--card-bg); padding: 25px; border-radius: 15px; flex: 1; border-left: 5px solid var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        .admin-table { width: 100%; background: var(--card-bg); margin-top: 20px; border-collapse: collapse; border-radius: 10px; overflow: hidden; color: var(--text-color); border: 1px solid var(--border);}
+        .admin-table th, .admin-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
+        .admin-table th { background: var(--primary); color: white; }
+        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #ffd166; color: #000; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
 </head>
 <body>
 
@@ -16,14 +99,14 @@
 
     <div id="loginOverlay" class="overlay">
         <div class="glass-box">
-            <h2>🌿 Navya Astra Plants</h2>
+            <h2>🌿 Greenish Plant</h2>
             <p style="margin-bottom: 20px;">Welcome to Premium 3D Store</p>
             <div id="loginStep1">
                 <input type="number" id="mobileInput" placeholder="Enter 10-digit mobile number">
                 <button class="btn-primary" onclick="sendOTP()" style="width: 100%;">Get OTP</button>
             </div>
             <div id="loginStep2" style="display: none;">
-                <p class="small-text" style="color: green; margin-bottom: 10px;">OTP sent successfully!</p>
+                <p class="small-text" style="color: var(--primary); font-weight: bold; margin-bottom: 10px;">OTP sent successfully!</p>
                 <input type="number" id="otpInput" placeholder="Enter 4-digit OTP">
                 <button class="btn-primary" onclick="verifyOTP()" style="width: 100%;">Verify & Login</button>
             </div>
@@ -32,7 +115,12 @@
     </div>
 
     <header id="mainHeader" style="display: none;">
-        <div class="logo">🌿 Navya Astra</div>
+        <div class="logo">
+            🌿 Greenish Plant
+            <span style="font-size:11px; background:#ffbe0b; color:black; padding:4px 10px; border-radius:20px; margin-left:8px;">
+                Demo Mode
+            </span>
+        </div>
         <nav>
             <a href="#" onclick="toggleTheme()" title="Dark/Light Mode"><i class="fa-solid fa-moon"></i></a>
             <a href="#" onclick="showSection('homeSection')">Home</a>
@@ -94,18 +182,18 @@
 
         <footer id="mainFooter">
             <div class="footer-content">
-                <div><h3>🌿 Navya Astra</h3><p>India's finest 3D plant store.</p></div>
+                <div><h3>🌿 Greenish Plant</h3><p>India's finest 3D plant store.</p></div>
                 <div><h4>Quick Links</h4><p>About Us</p><p>Contact Us</p></div>
                 <div><h4>Policies</h4><p>Return & Refund</p><p>Privacy Policy</p></div>
             </div>
-            <div class="footer-bottom">&copy; 2026 Navya Astra. All rights reserved.</div>
+            <div class="footer-bottom">&copy; 2026 Greenish Plant. Created by <strong>Vivek Shukla</strong>. All rights reserved.</div>
         </footer>
     </div>
 
     <div id="productOverlay" class="overlay" style="display: none; opacity: 0;">
-        <div class="glass-box" style="max-width: 500px; text-align: left; position: relative;">
+        <div class="glass-box" style="text-align: left; position: relative;">
             <i class="fa-solid fa-xmark close-icon" style="position: absolute; top: 15px; right: 20px;" onclick="closeProductModal()"></i>
-            <img id="detailImg" src="" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">
+            <img id="detailImg" src="" onerror="this.src='https://placehold.co/500x500/2d6a4f/ffffff?text=Plant+Image'" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">
             <h2 id="detailTitle">Plant Name</h2>
             <p id="detailPrice" style="font-size: 22px; font-weight: bold; color: var(--primary); margin-bottom: 5px;">₹0</p>
             <p id="detailStock" style="font-size: 12px; color: #d90429; font-weight: bold; margin-bottom: 15px;"></p>
@@ -120,7 +208,7 @@
     </div>
 
     <div id="cartOverlay" class="overlay" style="display: none; opacity: 0;">
-        <div class="glass-box" style="max-width: 450px;">
+        <div class="glass-box">
             <div style="display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
                 <h2>Your Cart 🛒</h2>
                 <i class="fa-solid fa-xmark close-icon" onclick="closeCart()"></i>
@@ -131,11 +219,11 @@
                 <input type="text" id="promoCode" placeholder="Promo Code (Try VIVA50)" style="margin: 0; flex: 1;">
                 <button class="btn-primary" onclick="applyPromo()">Apply</button>
             </div>
-            <p id="promoMsg" style="font-size: 12px; color: #2d6a4f; display: none; margin-top: 5px; text-align: left; font-weight: bold;">Coupon Applied Successfully!</p>
+            <p id="promoMsg" style="font-size: 12px; color: var(--primary); display: none; margin-top: 5px; text-align: left; font-weight: bold;">Coupon Applied Successfully!</p>
 
             <div style="text-align: right; margin-top: 15px; border-top: 2px dashed var(--border); padding-top: 10px;">
                 <p>Delivery: <span id="deliveryCharge">₹50</span></p>
-                <p id="discountText" style="color: #2d6a4f; display: none; font-weight: bold;">Discount: -₹50</p>
+                <p id="discountText" style="color: var(--primary); display: none; font-weight: bold;">Discount: -₹50</p>
                 <h3>Total: ₹<span id="cartTotal">0</span></h3>
             </div>
             <button class="btn-primary" style="width: 100%; margin-top: 15px;" onclick="startCheckout()">Proceed to Checkout</button>
@@ -143,14 +231,14 @@
     </div>
 
     <div id="paymentOverlay" class="overlay" style="display: none; opacity: 0;">
-        <div class="glass-box" style="max-width: 450px; text-align: left;">
+        <div class="glass-box" style="text-align: left;">
             <h2 id="payTitle">Secure Checkout 💳</h2>
             <div id="paymentForm">
                 <label style="font-size: 14px; font-weight: bold;">Delivery Address</label>
-                <textarea id="deliveryAddress" placeholder="Full address with pin code" style="width:100%; padding:10px; border-radius:8px; margin-bottom: 10px; border: 1px solid var(--border); background: var(--bg-color); color: var(--text-color);" rows="2" required></textarea>
+                <textarea id="deliveryAddress" placeholder="Full address with pin code" rows="2" required></textarea>
                 
                 <label style="font-size: 14px; font-weight: bold;">Expected Delivery Date</label>
-                <input type="date" id="deliveryDate" style="width:100%; padding:10px; border-radius:8px; margin-bottom: 15px;" required>
+                <input type="date" id="deliveryDate" required>
                 
                 <label style="font-size: 14px; font-weight: bold;">Payment Method</label>
                 <div style="margin-bottom: 15px; font-size: 14px;">
@@ -178,7 +266,7 @@
 
     <section id="adminSection" style="display: none; height: 100vh; width: 100vw; background: var(--bg-color); position: fixed; top: 0; left: 0; z-index: 3000;">
         <div class="admin-sidebar">
-            <h2>⚙️ Navya Astra</h2>
+            <h2>⚙️ Greenish Plant</h2>
             <p style="color: #b7e4c7; font-size: 12px; margin-bottom: 20px;">Admin Portal</p>
             <a href="#" class="active" onclick="switchAdminTab('dashboard', this)"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
             <a href="#" onclick="switchAdminTab('inventory', this)"><i class="fa-solid fa-leaf"></i> Stock Management</a>
@@ -199,8 +287,7 @@
                 <h3 style="margin-top: 40px; color: var(--text-color);">Live Order Management</h3>
                 <table class="admin-table">
                     <thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Status (Change Live)</th></tr></thead>
-                    <tbody id="adminOrderTable">
-                        </tbody>
+                    <tbody id="adminOrderTable"></tbody>
                 </table>
             </div>
 
@@ -209,9 +296,9 @@
                 <div style="background: var(--card-bg); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--border);">
                     <h3>Add New Product</h3>
                     <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                        <input type="text" id="newPName" placeholder="Product Name" style="padding: 10px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg-color); color: var(--text-color); flex: 1;">
-                        <input type="number" id="newPPrice" placeholder="Price" style="padding: 10px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg-color); color: var(--text-color); width: 100px;">
-                        <input type="number" id="newPStock" placeholder="Stock" style="padding: 10px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg-color); color: var(--text-color); width: 100px;">
+                        <input type="text" id="newPName" placeholder="Product Name" style="flex: 1;">
+                        <input type="number" id="newPPrice" placeholder="Price" style="width: 100px;">
+                        <input type="number" id="newPStock" placeholder="Stock" style="width: 100px;">
                         <button class="btn-primary" onclick="addNewProduct()">Add Product</button>
                     </div>
                 </div>
@@ -224,6 +311,455 @@
         </div>
     </section>
 
-    <script src="script.js"></script>
+    <script>
+        // --- Database: Premium A to Z Catalog (New Placeholders) ---
+        let products = [
+            { id: 1, name: "Monstera Deliciosa", category: "Indoor", price: 499, stock: 10,
+              img: "https://placehold.co/500x500/2d6a4f/ffffff?text=Monstera+Plant",
+              tags: ["Air Purifying"], sun: "☀️ Medium", water: "💧 Weekly" },
+
+            { id: 2, name: "Snake Plant", category: "Indoor", price: 299, stock: 5,
+              img: "https://placehold.co/500x500/40916c/ffffff?text=Snake+Plant",
+              tags: ["Low Maintenance"], sun: "☀️ Low", water: "💧 Bi-Weekly" },
+
+            { id: 3, name: "Ficus Bonsai", category: "Indoor", price: 899, stock: 2,
+              img: "https://placehold.co/500x500/1b4332/ffffff?text=Ficus+Bonsai",
+              tags: ["Bonsai"], sun: "☀️ Bright", water: "💧 Frequent" },
+
+            { id: 4, name: "Aloe Vera", category: "Outdoor", price: 199, stock: 20,
+              img: "https://placehold.co/500x500/52b788/ffffff?text=Aloe+Vera",
+              tags: ["Medicinal"], sun: "☀️ Direct", water: "💧 Bi-Weekly" },
+
+            { id: 5, name: "Areca Palm", category: "Outdoor", price: 699, stock: 0,
+              img: "https://placehold.co/500x500/74c69d/ffffff?text=Areca+Palm",
+              tags: ["Big Size"], sun: "☀️ Indirect", water: "💧 Weekly" },
+
+            { id: 6, name: "Red Rose Plant", category: "Flowers", price: 349, stock: 15,
+              img: "https://placehold.co/500x500/d90429/ffffff?text=Red+Rose",
+              tags: ["Romantic"], sun: "☀️ Full Sun", water: "💧 Daily" },
+
+            { id: 7, name: "Sunflower Pot", category: "Flowers", price: 250, stock: 8,
+              img: "https://placehold.co/500x500/ffbe0b/000000?text=Sunflower",
+              tags: ["Bright"], sun: "☀️ Full Sun", water: "💧 Daily" },
+
+            { id: 8, name: "Mixed Flower Seeds", category: "Seeds", price: 150, stock: 50,
+              img: "https://placehold.co/500x500/f77f00/ffffff?text=Flower+Seeds",
+              tags: ["Pack of 5"], sun: "☀️ Medium", water: "💧 Keep moist" },
+
+            { id: 9, name: "Organic Basil Seeds", category: "Seeds", price: 99, stock: 30,
+              img: "https://placehold.co/500x500/2a9d8f/ffffff?text=Basil+Seeds",
+              tags: ["Herbs"], sun: "☀️ Full Sun", water: "💧 Daily" },
+
+            { id: 10, name: "Premium Ceramic Pot", category: "Accessories", price: 399, stock: 12,
+              img: "https://placehold.co/500x500/adb5bd/000000?text=Ceramic+Pot",
+              tags: ["Decor"], sun: "N/A", water: "N/A" },
+
+            { id: 11, name: "Terracotta Pots (Set)", category: "Accessories", price: 299, stock: 25,
+              img: "https://placehold.co/500x500/b08968/ffffff?text=Terracotta+Pots",
+              tags: ["Classic"], sun: "N/A", water: "N/A" },
+
+            { id: 12, name: "Gardening Tool Kit", category: "Accessories", price: 549, stock: 5,
+              img: "https://placehold.co/500x500/6c757d/ffffff?text=Tool+Kit",
+              tags: ["Steel"], sun: "N/A", water: "N/A" }
+        ];
+
+        let cart = [];
+        let myOrders = [];
+        let wishlist = [];
+        let totalRevenue = 0;
+        let discountApplied = false;
+
+        // --- Initialization ---
+        window.onload = () => {
+            gsap.from(".glass-box", { y: -50, opacity: 0, duration: 0.8, ease: "back.out" });
+            renderProducts('All');
+            renderAdminProducts();
+        };
+
+        function toggleTheme() {
+            const body = document.body;
+            body.getAttribute('data-theme') === 'dark' ? body.removeAttribute('data-theme') : body.setAttribute('data-theme', 'dark');
+        }
+
+        // --- Login Logic ---
+        function sendOTP() {
+            const mobile = document.getElementById("mobileInput").value;
+            if(mobile.length === 10) {
+                document.getElementById("loginStep1").style.display = "none";
+                document.getElementById("loginStep2").style.display = "block";
+            } else { alert("Boss, please enter a valid 10-digit number."); }
+        }
+
+        function verifyOTP() {
+            gsap.to("#loginOverlay", { opacity: 0, duration: 0.5, onComplete: () => {
+                document.getElementById("loginOverlay").style.display = "none";
+                document.getElementById("mainHeader").style.display = "flex";
+                document.getElementById("mainContentWrapper").style.display = "block";
+                
+                // Force load shop to fix blank screen issue
+                showSection('shopSection');
+            }});
+        }
+
+        function adminLogin() {
+            const id = prompt("Admin ID:"); const pass = prompt("Admin Password:");
+            if(id === "Vivekshukla" && pass === "Vivek1234@") {
+                document.getElementById("loginOverlay").style.display = "none";
+                document.getElementById("mainHeader").style.display = "none";
+                document.getElementById("mainContentWrapper").style.display = "none";
+                document.getElementById("adminSection").style.display = "flex";
+                updateAdminStats();
+            } else { alert("Access Denied!"); }
+        }
+
+        function logout() { location.reload(); }
+        function logoutAdmin() { location.reload(); }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.page-section').forEach(sec => sec.style.display = 'none');
+            const target = document.getElementById(sectionId);
+            target.style.display = 'flex';
+            gsap.from(target, { opacity: 0, y: 20, duration: 0.5 });
+            if(sectionId === 'wishlistSection') renderWishlist();
+        }
+
+        // --- Shop & Rendering ---
+        function renderProducts(filter, searchQuery = "") {
+            const grid = document.getElementById("productGrid");
+            grid.innerHTML = "";
+            
+            products.forEach(p => {
+                let matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+                let matchFilter = (filter === 'All' || p.category === filter || p.tags.includes(filter));
+                
+                if(matchFilter && matchSearch) {
+                    let stockStatus = p.stock > 0 ? 
+                        `<button class="btn-primary" onclick="event.stopPropagation(); addToCart(${p.id})">Add to Cart</button>` : 
+                        `<button class="btn-primary" disabled>Out of Stock</button>`;
+                    
+                    let wishClass = wishlist.includes(p.id) ? 'active' : '';
+                    
+                    grid.innerHTML += `
+                        <div class="product-card" onclick="openProductModal(${p.id})">
+                            <i class="fa-solid fa-heart wish-icon ${wishClass}" onclick="event.stopPropagation(); toggleWishlist(${p.id})"></i>
+                            <img src="${p.img}" alt="${p.name}" onerror="this.src='https://placehold.co/500x500/2d6a4f/ffffff?text=Plant+Image'">
+                            <h3>${p.name}</h3>
+                            <p style="font-weight: bold; color: var(--primary); margin: 10px 0; font-size: 18px;">₹${p.price}</p>
+                            ${stockStatus}
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function filterPlants(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderProducts(category);
+        }
+
+        function searchProducts() {
+            let query = document.getElementById("searchInput").value;
+            renderProducts('All', query);
+        }
+
+        function toggleWishlist(id) {
+            let index = wishlist.indexOf(id);
+            if(index > -1) wishlist.splice(index, 1);
+            else wishlist.push(id);
+            document.getElementById("wishCount").innerText = wishlist.length;
+            renderProducts('All', document.getElementById("searchInput").value);
+            renderWishlist();
+        }
+
+        function renderWishlist() {
+            const grid = document.getElementById("wishlistGrid");
+            grid.innerHTML = "";
+            if(wishlist.length === 0) {
+                grid.innerHTML = "<p>Your wishlist is empty. Explore our catalog! ❤️</p>";
+                return;
+            }
+            products.forEach(p => {
+                if(wishlist.includes(p.id)) {
+                    grid.innerHTML += `
+                        <div class="product-card">
+                            <i class="fa-solid fa-heart wish-icon active" onclick="toggleWishlist(${p.id})"></i>
+                            <img src="${p.img}" onerror="this.src='https://placehold.co/500x500/2d6a4f/ffffff?text=Plant+Image'">
+                            <h3>${p.name}</h3>
+                            <p style="font-weight: bold; color: var(--primary); margin: 10px 0;">₹${p.price}</p>
+                            <button class="btn-primary" onclick="addToCart(${p.id}); toggleWishlist(${p.id})">Move to Cart</button>
+                        </div>`;
+                }
+            });
+        }
+
+        // --- Modals ---
+        function openProductModal(id) {
+            const p = products.find(x => x.id === id);
+            if(p) {
+                document.getElementById("detailImg").src = p.img;
+                document.getElementById("detailTitle").innerText = p.name;
+                document.getElementById("detailPrice").innerText = "₹" + p.price;
+                document.getElementById("detailStock").innerText = p.stock > 0 ? `In Stock: ${p.stock}` : "Out of Stock";
+                document.getElementById("detailSun").innerText = p.sun;
+                document.getElementById("detailWater").innerText = p.water;
+                
+                let btn = document.getElementById("detailAddToCartBtn");
+                if(p.stock > 0) {
+                    btn.innerText = "Add to Cart"; btn.disabled = false;
+                    btn.onclick = () => { addToCart(p.id); closeProductModal(); };
+                } else {
+                    btn.innerText = "Out of Stock"; btn.disabled = true;
+                }
+
+                const overlay = document.getElementById("productOverlay");
+                overlay.style.display = "flex";
+                gsap.to(overlay, { opacity: 1, duration: 0.3 });
+            }
+        }
+        function closeProductModal() { gsap.to("#productOverlay", { opacity: 0, duration: 0.3, onComplete: () => { document.getElementById("productOverlay").style.display = "none"; }}); }
+
+        // --- Cart System & Ghost Bug Fix ---
+        function addToCart(id) {
+            const p = products.find(x => x.id === id);
+            if(p && p.stock > 0) {
+                cart.push(p);
+                p.stock--; 
+                document.getElementById("cartCount").innerText = cart.length;
+                gsap.from(".cart-btn", { scale: 1.3, duration: 0.3, ease: "bounce.out" });
+                renderProducts('All', document.getElementById("searchInput").value); 
+            }
+        }
+
+        function openCart() {
+            const overlay = document.getElementById("cartOverlay");
+            overlay.style.display = "flex"; gsap.to(overlay, { opacity: 1, duration: 0.3 });
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById("cartItemsList");
+            let total = 0; list.innerHTML = "";
+            
+            if(cart.length === 0) { list.innerHTML = "<p>Your cart is empty!</p>"; } 
+            else {
+                cart.forEach((item, index) => {
+                    total += item.price;
+                    list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; background:var(--card-bg); margin-bottom:5px; border-radius:5px; border:1px solid var(--border);"><span>${item.name}</span><span>₹${item.price} <i class="fa-solid fa-trash" style="color:red; cursor:pointer; margin-left:10px;" onclick="removeItem(${index}, ${item.id})"></i></span></div>`;
+                });
+            }
+            
+            let finalTotal = total > 0 ? total + 50 : 0;
+            if(discountApplied && finalTotal > 50) {
+                finalTotal -= 50;
+                document.getElementById("discountText").style.display = "block";
+            }
+            document.getElementById("cartTotal").innerText = finalTotal;
+        }
+
+        function closeCart() { gsap.to("#cartOverlay", { opacity: 0, duration: 0.3, onComplete: () => { document.getElementById("cartOverlay").style.display = "none"; }}); }
+        
+        function removeItem(index, pId) { 
+            cart.splice(index, 1); 
+            // Safety check: Agar admin ne delete nahi kiya hai tabhi stock wapas add karo
+            let restoredProduct = products.find(x => x.id === pId);
+            if(restoredProduct) {
+                restoredProduct.stock++; 
+            }
+            document.getElementById("cartCount").innerText = cart.length; 
+            updateCartUI(); 
+            renderProducts('All', document.getElementById("searchInput").value);
+        }
+
+        function applyPromo() {
+            let code = document.getElementById("promoCode").value;
+            if(code.toUpperCase() === "VIVA50" && !discountApplied && cart.length > 0) {
+                discountApplied = true;
+                document.getElementById("promoMsg").style.display = "block";
+                updateCartUI();
+            } else {
+                alert("Invalid promo code, or already applied, or cart is empty!");
+            }
+        }
+
+        // --- Checkout & Payment Simulation ---
+        function startCheckout() {
+            if(cart.length === 0) return alert("Add items to cart first!");
+            closeCart();
+            document.getElementById("paymentOverlay").style.display = "flex";
+            gsap.to("#paymentOverlay", { opacity: 1, duration: 0.3 });
+        }
+
+        function processAutoPayment() {
+            let address = document.getElementById("deliveryAddress").value;
+            let date = document.getElementById("deliveryDate").value;
+            if(!address || !date) return alert("Please fill Delivery Address and Date.");
+
+            document.getElementById("paymentForm").style.display = "none";
+            document.getElementById("payTitle").style.display = "none";
+            document.getElementById("payLoader").style.display = "block";
+
+            setTimeout(() => {
+                document.getElementById("payLoader").style.display = "none";
+                document.getElementById("paySuccess").style.display = "block";
+                confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 }, colors: ['#2d6a4f', '#40916c', '#b7e4c7'] });
+
+                let cartTotalValue = parseInt(document.getElementById("cartTotal").innerText);
+                let randomOrderId = Math.floor(Math.random() * 90000) + 10000;
+                
+                // Add to Customer Orders
+                myOrders.push({ id: randomOrderId, items: cart.length, total: cartTotalValue, status: 'Processing', date: date });
+                totalRevenue += cartTotalValue;
+                
+                // Add to Admin Orders Live
+                let adminTable = document.getElementById("adminOrderTable");
+                let newAdminOrder = `
+                    <tr id="row-${randomOrderId}">
+                        <td style="font-weight: bold;">#ORD-${randomOrderId}</td>
+                        <td>Live Demo User</td>
+                        <td style="color: var(--primary); font-weight: bold;">₹${cartTotalValue}</td>
+                        <td>
+                            <select onchange="changeOrderStatus(${randomOrderId}, this.value)" style="padding:5px; border-radius:5px; border:1px solid #ccc; background:white; color:black;">
+                                <option value="Processing" selected>Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+                adminTable.innerHTML = newAdminOrder + adminTable.innerHTML;
+                
+                // Update Admin Inventory permanently
+                renderAdminProducts();
+                updateAdminStats();
+
+                cart = []; discountApplied = false; document.getElementById("cartCount").innerText = "0";
+            }, 4000);
+        }
+
+        function closePayment() { gsap.to("#paymentOverlay", { opacity: 0, duration: 0.3, onComplete: () => { document.getElementById("paymentOverlay").style.display = "none"; }}); }
+        function closePaymentSuccess() { closePayment(); showMyOrders(); }
+
+        // --- My Orders ---
+        function showMyOrders() {
+            showSection('ordersSection');
+            const list = document.getElementById("myOrdersList");
+            if(myOrders.length === 0) { list.innerHTML = "<p>Boss, you haven't placed any orders yet. 🌱</p>"; return; }
+            
+            let html = '<table class="admin-table"><tr><th>Order ID</th><th>Items</th><th>Amount</th><th>Expected Delivery</th><th>Live Status</th></tr>';
+            myOrders.forEach(o => {
+                html += `<tr><td style="font-weight:bold;">#ORD-${o.id}</td><td>${o.items} items</td><td style="color:var(--primary); font-weight:bold;">₹${o.total}</td><td>${o.date}</td><td><span class="status-badge" id="status-${o.id}">${o.status}</span></td></tr>`;
+            });
+            list.innerHTML = html + '</table>';
+        }
+
+        // --- ADVANCED ADMIN PANEL ---
+        function switchAdminTab(tab, element) {
+            document.getElementById("adminTabDashboard").style.display = tab === 'dashboard' ? 'block' : 'none';
+            document.getElementById("adminTabInventory").style.display = tab === 'inventory' ? 'block' : 'none';
+            
+            document.querySelectorAll(".admin-sidebar a").forEach(a => a.classList.remove("active"));
+            if(element) element.classList.add("active");
+        }
+
+        function updateAdminStats() {
+            document.getElementById("adminActiveOrders").innerText = myOrders.length;
+            document.getElementById("adminRev").innerText = "₹" + totalRevenue;
+            document.getElementById("adminLowStock").innerText = products.filter(p => p.stock < 5).length;
+        }
+
+        function changeOrderStatus(orderId, newStatus) {
+            let order = myOrders.find(o => o.id === orderId);
+            if(order) order.status = newStatus;
+            
+            let custStatusSpan = document.getElementById(`status-${orderId}`);
+            if(custStatusSpan) custStatusSpan.innerText = newStatus;
+            
+            alert(`Success: Order #ORD-${orderId} updated to ${newStatus}`);
+        }
+
+        function downloadCSV() {
+            if(myOrders.length === 0) return alert("No sales data to export.");
+            let csvContent = "data:text/csv;charset=utf-8,OrderID,Items,Amount,Date,Status\n";
+            myOrders.forEach(o => { csvContent += `ORD-${o.id},${o.items},${o.total},${o.date},${o.status}\n`; });
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "GreenishPlant_Sales_Report.csv");
+            document.body.appendChild(link); link.click();
+        }
+
+        function renderAdminProducts() {
+            let table = document.getElementById("adminProductsTable");
+            table.innerHTML = "";
+            products.forEach((p, index) => {
+                table.innerHTML += `
+                    <tr>
+                        <td><img src="${p.img}" onerror="this.src='https://placehold.co/500x500/2d6a4f/ffffff?text=Plant'" style="width:50px; height:50px; border-radius:5px; object-fit:cover;"></td>
+                        <td>${p.name}</td>
+                        <td>₹${p.price}</td>
+                        <td><input type="number" value="${p.stock}" onchange="updateStock(${p.id}, this.value)" style="width:60px; padding:5px; border-radius:5px; border:1px solid var(--border); background:var(--bg-color); color:var(--text-color);"></td>
+                        <td><button onclick="deleteProduct(${index})" style="background:#ff4d4d; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">Delete</button></td>
+                    </tr>`;
+            });
+            updateAdminStats();
+        }
+
+        function addNewProduct() {
+            let name = document.getElementById("newPName").value;
+            let price = document.getElementById("newPPrice").value;
+            let stock = document.getElementById("newPStock").value;
+            if(name && price && stock) {
+                products.push({
+                    id: Date.now(), name: name, category: "Indoor", price: parseInt(price), stock: parseInt(stock),
+                    img: "https://placehold.co/500x500/2d6a4f/ffffff?text=New+Plant", tags: ["New Arrival"], sun:"☀️ Medium", water:"💧 Weekly"
+                });
+                renderAdminProducts(); renderProducts('All'); alert("Product Added Successfully!");
+            } else alert("Please fill all fields to add a new product.");
+        }
+
+        function updateStock(id, newStock) {
+            let p = products.find(x => x.id === id);
+            if(p) p.stock = parseInt(newStock);
+            renderProducts('All', document.getElementById("searchInput").value); 
+            updateAdminStats();
+        }
+
+        function deleteProduct(index) {
+            if(confirm("Boss, are you sure you want to delete this product?")) {
+                products.splice(index, 1);
+                renderAdminProducts(); renderProducts('All');
+            }
+        }
+
+        // --- Three.js 3D Background System ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        const geometry = new THREE.IcosahedronGeometry(2, 0);
+        const material = new THREE.MeshStandardMaterial({ color: 0x40916c, wireframe: true });
+        const shape1 = new THREE.Mesh(geometry, material); shape1.position.set(-6, 2, -5); scene.add(shape1);
+        const shape2 = new THREE.Mesh(geometry, material); shape2.position.set(6, -2, -8); scene.add(shape2);
+
+        const light = new THREE.DirectionalLight(0xffffff, 1); light.position.set(5, 5, 5); scene.add(light);
+        camera.position.z = 5;
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            shape1.rotation.x += 0.002; shape1.rotation.y += 0.003;
+            shape2.rotation.x -= 0.001; shape2.rotation.y += 0.004;
+            renderer.render(scene, camera);
+        }
+        animate3D();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
 </body>
 </html>
