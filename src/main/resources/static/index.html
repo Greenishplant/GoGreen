@@ -1,123 +1,136 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Greenish Plant | E-Commerce</title>
+<title>Greenish Plant | Premium Store</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{margin:0;font-family:Arial;background:#f2f8f2}
-header{background:#0f5132;color:white;padding:15px;text-align:center}
-button{padding:8px 15px;background:#198754;color:white;border:none;border-radius:5px;cursor:pointer}
-input{padding:8px;margin:5px}
-.card{background:white;padding:15px;margin:10px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,0.1);display:inline-block;width:200px}
-#popup{position:fixed;top:0;left:0;width:100%;height:100%;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:25px}
-footer{background:#0f5132;color:white;text-align:center;padding:10px;margin-top:40px}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+
+body{
+height:100vh;
+background:linear-gradient(-45deg,#0f5132,#198754,#20c997,#0f5132);
+background-size:400% 400%;
+animation:bg 10s ease infinite;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:hidden;
+}
+
+@keyframes bg{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+.glass{
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(15px);
+padding:40px;
+border-radius:20px;
+box-shadow:0 8px 32px rgba(0,0,0,0.3);
+width:350px;
+text-align:center;
+color:white;
+animation:fade 1s ease-in-out;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(-20px)}
+to{opacity:1;transform:translateY(0)}
+}
+
+input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:none;
+border-radius:10px;
+outline:none;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+background:#20c997;
+color:white;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#198754;
+transform:scale(1.05);
+}
+
+h2{margin-bottom:20px}
+
+#popup{
+position:fixed;
+width:100%;
+height:100%;
+background:black;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:28px;
+animation:pop 2s forwards;
+}
+
+@keyframes pop{
+0%{opacity:1}
+100%{opacity:0;visibility:hidden}
+}
+
 </style>
 </head>
 
 <body>
 
-<div id="popup">🌿 Welcome to Greenish Plant<br>Developed by Vivek Sharma</div>
+<div id="popup">
+🌿 Welcome to Greenish Plant<br>
+Developed by Vivek Sharma
+</div>
 
-<header>
-Greenish Plant E-Commerce
-</header>
-
-<div id="loginBox">
-<h3>Login</h3>
-<input id="name" placeholder="Name">
-<input id="phone" placeholder="Phone">
+<div class="glass" id="loginBox">
+<h2>Greenish Login</h2>
+<input id="name" placeholder="Enter Name">
+<input id="phone" placeholder="Enter Phone">
 <button onclick="login()">Login</button>
 </div>
 
-<div id="dashboard" style="display:none">
-<h3>Products</h3>
-<div id="products"></div>
-
-<h3>Track Order</h3>
-<input id="trackId" placeholder="Order ID">
-<button onclick="track()">Track</button>
-<div id="result"></div>
-</div>
-
-<div id="admin" style="display:none">
-<h3>Admin Panel</h3>
-<div id="orders"></div>
-</div>
-
-<footer>
-© 2026 Greenish Plant | Developed by Vivek Sharma
-</footer>
-
 <script>
-setTimeout(()=>document.getElementById("popup").style.display="none",2000)
-
-let user=null
 
 function login(){
-fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},
-body:JSON.stringify({name:name.value,phone:phone.value})})
-.then(r=>r.json())
-.then(d=>{
-user=d
-login.style.display="none"
-if(d.role==="ADMIN"){admin.style.display="block";loadOrders()}
-else{dashboard.style.display="block";loadProducts()}
-})
-}
 
-function loadProducts(){
-fetch("/api/products")
+fetch(window.location.origin + "/api/login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+name:document.getElementById("name").value,
+phone:document.getElementById("phone").value
+})
+})
 .then(r=>r.json())
 .then(data=>{
-products.innerHTML=""
-data.forEach(p=>{
-products.innerHTML+=`
-<div class="card">
-<h4>${p.name}</h4>
-<p>₹ ${p.price}</p>
-<button onclick="buy('${p.name}',${p.price})">Buy</button>
-</div>`
-})
-})
+
+if(data.role==="ADMIN"){
+alert("Welcome Admin 🚀")
+}
+else{
+alert("Welcome "+data.name+" 🌿")
 }
 
-function buy(name,price){
-if(!confirm("Proceed to Payment Demo?")) return
-fetch("/api/order",{method:"POST",headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:user.name,product:name,price:price})})
-.then(r=>r.json())
-.then(d=>alert("Order ID: "+d.orderId))
-}
-
-function loadOrders(){
-fetch("/api/orders")
-.then(r=>r.json())
-.then(data=>{
-orders.innerHTML=""
-data.forEach(o=>{
-orders.innerHTML+=`
-<div class="card">
-<p>${o.product}</p>
-<p>${o.orderId}</p>
-<p>${o.status}</p>
-<button onclick="updateStatus('${o.orderId}','SHIPPED')">Ship</button>
-<button onclick="updateStatus('${o.orderId}','DELIVERED')">Deliver</button>
-</div>`
 })
-})
+.catch(e=>alert("Server Error"))
+
 }
 
-function updateStatus(id,status){
-fetch("/api/update",{method:"POST",headers:{"Content-Type":"application/json"},
-body:JSON.stringify({orderId:id,status:status})})
-.then(()=>loadOrders())
-}
-
-function track(){
-fetch("/api/track/"+trackId.value)
-.then(r=>r.json())
-.then(d=>result.innerHTML=d.status? "Status: "+d.status : "Not Found")
-}
 </script>
 
 </body>
