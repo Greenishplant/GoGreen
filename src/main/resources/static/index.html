@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Greenish Plant | High-Level Enterprise</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
+        :root { --primary: #2d6a4f; --accent: #40916c; --bg: #f0f7f4; --text: #1b4332; --glass: rgba(255, 255, 255, 0.9); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+        
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+        
+        /* Navigation */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--glass); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .logo { font-size: 24px; font-weight: 800; color: var(--primary); }
+        nav { display: flex; gap: 20px; }
+        nav a { cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.3s; }
+        nav a:hover { color: var(--accent); }
+
+        /* Hero Section */
+        .page-section { min-height: 90vh; padding: 40px 5%; display: none; animation: fadeIn 0.5s ease; }
+        #home { display: block; text-align: center; padding-top: 100px; }
+        #home h1 { font-size: 4rem; line-height: 1.1; margin-bottom: 20px; }
+        #home h1 span { color: var(--primary); }
+
+        /* Shop & Filters */
+        .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; justify-content: center; }
+        .filter-btn { padding: 8px 15px; border: 1px solid var(--primary); border-radius: 20px; background: white; cursor: pointer; font-size: 12px; transition: 0.3s; }
+        .filter-btn.active { background: var(--primary); color: white; }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 20px; padding: 15px; border: 1px solid #eee; transition: 0.4s; position: relative; }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
+        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; }
+        .card .tag { position: absolute; top: 25px; left: 25px; background: var(--primary); color: white; padding: 4px 10px; border-radius: 10px; font-size: 10px; }
+        .card h3 { font-size: 18px; margin: 10px 0 5px; }
+        .care-info { font-size: 11px; color: #666; margin-bottom: 10px; }
+        .price { font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 10px; }
+        .btn-buy { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+
+        /* Cart & Modals */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 5000; padding: 20px; }
+        .modal { background: white; padding: 30px; border-radius: 25px; width: 100%; max-width: 450px; text-align: center; max-height: 90vh; overflow-y: auto; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 10px; }
+
+        /* Admin & Table */
+        .admin-table { width: 100%; border-collapse: collapse; background: white; border-radius: 15px; overflow: hidden; margin-top: 20px; }
+        .admin-table th, .admin-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .admin-table th { background: var(--primary); color: white; }
+
+        /* Mobile View */
+        @media (max-width: 768px) {
+            header { flex-direction: column; padding: 15px; }
+            #home h1 { font-size: 2.5rem; }
+            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .card { padding: 10px; }
+            .card img { height: 130px; }
+            .card h3 { font-size: 14px; }
+        }
+
+        @media print { body * { visibility: hidden; } #invoiceArea, #invoiceArea * { visibility: visible; } #invoiceArea { position: fixed; left: 0; top: 0; width: 100%; padding: 40px; } .no-print { display: none; } }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <header id="mainHeader">
+        <div class="logo">🌿 Greenish</div>
+        <nav>
+            <a onclick="View.show('home')">Home</a>
+            <a onclick="View.show('shop')">Shop</a>
+            <a onclick="View.show('orders')">Orders</a>
+            <a onclick="Cart.open()" style="background:var(--primary); color:white; padding:5px 15px; border-radius:20px;">Cart (<span id="cartCount">0</span>)</a>
+            <a onclick="adminLogin()">Admin</a>
+        </nav>
+    </header>
+
+    <div id="app">
+        <section id="home" class="page-section">
+            <span style="background:var(--primary); color:white; padding:5px 15px; border-radius:20px; font-size:12px;">Plan-Based Java Architecture</span>
+            <h1>Fresh Plants <br> <span>Delivered To Your Home</span></h1>
+            <p>Air Purifying, Indoor & Outdoor Plants with Expert Care Guide.</p>
+            <button class="btn-buy" style="width: 220px; margin-top: 30px;" onclick="View.show('shop')">Start Gardening</button>
+        </section>
+
+        <section id="shop" class="page-section">
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="Shop.filter('All', this)">All</button>
+                <button class="filter-btn" onclick="Shop.filter('Indoor', this)">Indoor</button>
+                <button class="filter-btn" onclick="Shop.filter('Outdoor', this)">Outdoor</button>
+                <button class="filter-btn" onclick="Shop.filter('Flowering', this)">Flowering</button>
+                <button class="filter-btn" onclick="Shop.filter('Seeds', this)">Seeds</button>
+            </div>
+            <div class="product-grid" id="productGrid"></div>
+        </section>
+
+        <section id="orders" class="page-section">
+            <h2>📜 SQL Order History</h2>
+            <div class="admin-table-container" id="orderHistory" style="margin-top: 20px;"></div>
+        </section>
+
+        <footer style="background:#081c15; color:white; padding:40px; text-align:center; margin-top:50px;">
+            <p>&copy; 2026 Greenish Plants | Vivek Sharma</p>
+        </footer>
+    </div>
+
+    <div id="cartModal" class="overlay">
+        <div class="modal">
+            <h2>Your Cart</h2>
+            <div id="cartList" style="text-align: left; margin: 20px 0;"></div>
+            <h3 id="cartTotal">Total: ₹0</h3>
+            <button class="btn-buy" style="margin-top: 20px;" onclick="Cart.checkout()">Proceed to Checkout</button>
+            <button class="btn-buy" style="background:#555; margin-top:10px;" onclick="Cart.close()">Close</button>
+        </div>
+    </div>
+
+    <div id="payModal" class="overlay">
+        <div class="modal" style="text-align: left;">
+            <h2>Checkout Details</h2>
+            <label>Full Name</label><input type="text" id="custName" value="Vivek Sharma">
+            <label>Address</label><textarea id="custAddr" rows="2"></textarea>
+            <label>Payment: UPI Scan</label>
+            <div style="text-align:center;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=upi://pay?pa=vivek@upi" style="width:100px; margin: 10px 0;"></div>
+            <button class="btn-buy" onclick="SQL.commit()">Commit SQL Transaction</button>
+        </div>
+    </div>
+
+    <div id="invoiceModal" class="overlay">
+        <div class="modal" id="invoiceArea" style="background:white; color:black; text-align:left;">
+            <h2 style="color:var(--primary); border-bottom:2px solid var(--primary);">Greenish Invoice</h2>
+            <div id="invBody" style="margin:20px 0; font-size:13px;"></div>
+            <button class="btn-buy no-print" onclick="window.print()">Print Bill</button>
+            <button class="btn-buy no-print" style="background:#333; margin-top:10px;" onclick="document.getElementById('invoiceModal').style.display='none'">Exit</button>
+        </div>
+    </div>
+
+    <script>
+        /* ☕ JAVA-SQL MVC SERVICES */
+        const SQL = {
+            async commit() {
+                let name = document.getElementById('custName').value;
+                let addr = document.getElementById('custAddr').value;
+                if(!addr) return alert("Please enter delivery address!");
+
+                let order = {
+                    id: "ORD" + Math.floor(Math.random()*99999),
+                    customer: name,
+                    address: addr,
+                    total: document.getElementById('cartTotal').innerText,
+                    date: new Date().toLocaleDateString(),
+                    items: [...cartItems]
+                };
+
+                try {
+                    const response = await fetch('/api/checkout', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(order)
+                    });
+                    confetti();
+                    alert("SQL COMMIT SUCCESS: Order Recorded!");
+                    location.reload();
+                } catch(e) {
+                    // Fallback local persistence
+                    let db = JSON.parse(localStorage.getItem('greenish_sql')) || [];
+                    db.push(order);
+                    localStorage.setItem('greenish_sql', JSON.stringify(db));
+                    confetti(); alert("OFFLINE COMMIT: Order Saved Locally.");
+                    location.reload();
+                }
+            }
+        };
+
+        const View = {
+            show(id) {
+                document.querySelectorAll('.page-section').forEach(s => s.style.display = 'none');
+                document.getElementById(id).style.display = (id==='home') ? 'block' : 'block';
+                if(id === 'orders') this.renderOrders();
+            },
+            renderOrders() {
+                let db = JSON.parse(localStorage.getItem('greenish_sql')) || [];
+                let h = '<table class="admin-table"><tr><th>OID</th><th>Customer</th><th>Total</th><th>Bill</th></tr>';
+                db.reverse().forEach(o => {
+                    h += `<tr><td>#${o.id}</td><td>${o.customer}</td><td>${o.total}</td><td><button onclick="View.print('${o.id}')" style="background:var(--primary); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">View</button></td></tr>`;
+                });
+                document.getElementById('orderHistory').innerHTML = h + '</table>';
+            },
+            print(oid) {
+                let db = JSON.parse(localStorage.getItem('greenish_sql')) || [];
+                let o = db.find(x => x.id === oid);
+                if(!o) return;
+                document.getElementById('invBody').innerHTML = `<b>Order ID:</b> #${o.id}<br><b>Customer:</b> ${o.customer}<br><b>Address:</b> ${o.address}<br><b>Date:</b> ${o.date}<br><br><b>Items:</b><br>` + o.items.map(i => `• ${i.name} (₹${i.price})`).join('<br>') + `<br><br><b>Total: ${o.total}</b>`;
+                document.getElementById('invoiceModal').style.display = 'flex';
+            }
+        };
+
+        const Shop = {
+            filter(cat, btn) {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.render(cat);
+            },
+            render(cat) {
+                let g = document.getElementById('productGrid');
+                g.innerHTML = "";
+                let filtered = cat === 'All' ? products : products.filter(p => p.cat === cat);
+                filtered.forEach(p => {
+                    g.innerHTML += `
+                    <div class="card">
+                        <span class="tag">${p.tag}</span>
+                        <img src="${p.img}" onerror="this.src='https://via.placeholder.com/200?text=Plant'">
+                        <h3>${p.name}</h3>
+                        <p class="care-info">☀️ ${p.sun} | 💧 ${p.water}</p>
+                        <p class="price">₹${p.price}</p>
+                        <button class="btn-buy" onclick="Cart.add(${p.id})">Add to Cart</button>
+                    </div>`;
+                });
+            }
+        };
+
+        let cartItems = [];
+        const Cart = {
+            add(id) {
+                let p = products.find(x => x.id === id);
+                cartItems.push(p);
+                document.getElementById('cartCount').innerText = cartItems.length;
+                alert(p.name + " added to Cart!");
+            },
+            open() {
+                document.getElementById('cartModal').style.display = 'flex';
+                let h = ""; let t = 0;
+                cartItems.forEach(i => { h += `<p style="border-bottom:1px solid #eee; padding:5px 0;">• ${i.name} (₹${i.price})</p>`; t += i.price; });
+                document.getElementById('cartList').innerHTML = h || "Cart is empty.";
+                document.getElementById('cartTotal').innerText = "₹" + t;
+            },
+            close() { document.getElementById('cartModal').style.display = 'none'; },
+            checkout() { this.close(); document.getElementById('payModal').style.display = 'flex'; }
+        };
+
+        const products = [
+            { id: 1, name: "Monstera", cat: "Indoor", price: 499, tag: "Air Purifier", sun: "Low", water: "Weekly", img: "https://images.pexels.com/photos/3125195/pexels-photo-3125195.jpeg?w=400" },
+            { id: 2, name: "Snake Plant", cat: "Indoor", price: 299, tag: "Pet Friendly", sun: "Low", water: "Bi-weekly", img: "https://images.pexels.com/photos/2123482/pexels-photo-2123482.jpeg?w=400" },
+            { id: 3, name: "Red Rose", cat: "Flowering", price: 349, tag: "Best Seller", sun: "High", water: "Daily", img: "https://images.pexels.com/photos/736230/pexels-photo-736230.jpeg?w=400" },
+            { id: 4, name: "Aloe Vera", cat: "Outdoor", price: 199, tag: "Medicinal", sun: "High", water: "Weekly", img: "https://images.pexels.com/photos/1334605/pexels-photo-1334605.jpeg?w=400" },
+            { id: 5, name: "Ficus Bonsai", cat: "Indoor", price: 899, tag: "Premium", sun: "Medium", water: "Weekly", img: "https://images.pexels.com/photos/3273934/pexels-photo-3273934.jpeg?w=400" },
+            { id: 6, name: "Sunflower", cat: "Flowering", price: 250, tag: "Seasonal", sun: "High", water: "Daily", img: "https://images.pexels.com/photos/1366630/pexels-photo-1366630.jpeg?w=400" },
+            { id: 7, name: "Mixed Seeds", cat: "Seeds", price: 150, tag: "Beginner", sun: "Medium", water: "Daily", img: "https://images.pexels.com/photos/1105019/pexels-photo-1105019.jpeg?w=400" },
+            { id: 8, name: "Areca Palm", cat: "Outdoor", price: 699, tag: "Air Purifier", sun: "Medium", water: "Daily", img: "https://images.pexels.com/photos/1084199/pexels-photo-1084199.jpeg?w=400" }
+        ];
+
+        function adminLogin() {
+            let id = prompt("Admin ID:"); let p = prompt("Password:");
+            if(id === "Vivek02" && p === "Vivek1234@") View.show('orders');
+        }
+
+        window.onload = () => { Shop.render('All'); };
+
+        // 3D Background
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+        const shape = new THREE.Mesh(new THREE.IcosahedronGeometry(2, 0), new THREE.MeshStandardMaterial({ color: 0x40916c, wireframe: true }));
+        scene.add(shape);
+        const light = new THREE.PointLight(0xffffff, 1); light.position.set(10, 10, 10); scene.add(light);
+        camera.position.z = 6;
+        function animate() { requestAnimationFrame(animate); shape.rotation.x += 0.005; shape.rotation.y += 0.005; renderer.render(scene, camera); }
+        animate();
+    </script>
+</body>
+</html>
