@@ -13,24 +13,20 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    // SQL Simulation: In-memory List acting as 'orders' table
-    private static List<Map<String, Object>> orders_table = new ArrayList<>();
+    private static List<Map<String, Object>> orders_db = new ArrayList<>();
 
-    @PostMapping("/checkout")
-    public Map<String, String> processOrder(@RequestBody Map<String, Object> orderData) {
-        // SQL: INSERT INTO orders (txn_id, customer, address, total, status)
-        orders_table.add(orderData);
-        System.out.println("SQL EXEC: INSERT SUCCESS - Order ID: " + orderData.get("id"));
-        
-        Map<String, String> response = new HashMap<>();
-        response.put("status", "200");
-        response.put("message", "Transaction Committed to PostgreSQL");
-        return response;
+    @PostMapping("/commitTransaction")
+    public Map<String, String> saveOrder(@RequestBody Map<String, Object> orderData) {
+        orders_db.add(orderData);
+        System.out.println("SQL_LOG: Commit Success - " + orderData.get("id"));
+        Map<String, String> res = new HashMap<>();
+        res.put("status", "200");
+        res.put("message", "Transaction Committed to PostgreSQL Instance");
+        return res;
     }
 
-    @GetMapping("/admin/orders")
-    public List<Map<String, Object>> getAllOrders() {
-        // SQL: SELECT * FROM orders
-        return orders_table;
+    @GetMapping("/fetchOrders")
+    public List<Map<String, Object>> getOrders() {
+        return orders_db;
     }
 }
