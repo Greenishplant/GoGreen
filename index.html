@@ -3,51 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoGreen 3D - Premium Plants</title>
-    <link rel="stylesheet" href="style.css">
+    <title>GoGreen - Premium Plant Store</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="loginOverlay" class="overlay">
-        <div class="login-box">
-            <h2>🌿 GoGreen</h2>
-            <p>Welcome to 3D Plant Store</p>
-            
-            <div id="step1">
-                <input type="number" id="mobileInput" placeholder="Enter 10-digit mobile number">
-                <button onclick="sendOTP()">Get OTP</button>
-            </div>
-            
-            <div id="step2" style="display: none;">
-                <p style="font-size: 12px; color: #52796f;">OTP sent to your number</p>
-                <input type="number" id="otpInput" placeholder="Enter 4-digit OTP">
-                <button onclick="verifyOTP()">Verify & Enter</button>
-            </div>
+    <div id="canvas-container"></div>
 
-            <p class="admin-link" onclick="adminLogin()">Admin Access</p>
+    <div id="loginOverlay" class="overlay">
+        <div class="glass-box">
+            <h2>🌿 Navya Astra Plants</h2>
+            <p>Login to your account</p>
+            <div id="loginStep1">
+                <input type="number" id="mobileInput" placeholder="Enter 10-digit mobile number">
+                <button class="btn-primary" onclick="sendOTP()">Get OTP</button>
+            </div>
+            <div id="loginStep2" style="display: none;">
+                <p class="small-text">OTP sent successfully!</p>
+                <input type="number" id="otpInput" placeholder="Enter 4-digit OTP">
+                <button class="btn-primary" onclick="verifyOTP()">Login</button>
+            </div>
+            <p class="admin-link" onclick="adminLogin()">Owner / Admin Login</p>
         </div>
     </div>
 
-    <header>
+    <header id="mainHeader" style="display: none;">
         <div class="logo">🌿 GoGreen</div>
         <nav>
-            <a href="#">Home</a>
-            <a href="#">3D Store</a>
-            <a href="#">Categories</a>
+            <a href="#" onclick="showSection('homeSection')">Home</a>
+            <a href="#" onclick="showSection('shopSection')">Shop Plants</a>
+            <a href="#" class="cart-btn" onclick="openCart()">
+                <i class="fa-solid fa-cart-shopping"></i> Cart (<span id="cartCount">0</span>)
+            </a>
+            <a href="#" onclick="logout()"><i class="fa-solid fa-user"></i> Logout</a>
         </nav>
     </header>
 
-    <main>
-        <div class="hero-text">
-            <h1 class="hero-title">Bring Nature <br> <span>To Your Home</span></h1>
-            <p>Experience the first fully interactive 3D plant e-commerce website.</p>
-            <button class="shop-btn">Explore Plants</button>
+    <section id="homeSection" class="page-section" style="display: none;">
+        <div class="hero-content">
+            <span class="badge">100% Organic 🌱</span>
+            <h1>Bring Nature <br> <span class="highlight">To Your Home</span></h1>
+            <p>Explore our premium collection of Indoor, Outdoor, and Air-Purifying plants with detailed care guides.</p>
+            <button class="btn-primary hero-btn" onclick="showSection('shopSection')">Shop Now</button>
         </div>
-        
-        <div id="canvas-container"></div>
-    </main>
+    </section>
+
+    <section id="shopSection" class="page-section" style="display: none;">
+        <div class="shop-container">
+            <div class="filters">
+                <h3>Filters</h3>
+                <button class="filter-btn active" onclick="filterPlants('All')">All Plants</button>
+                <button class="filter-btn" onclick="filterPlants('Indoor')">Indoor 🪴</button>
+                <button class="filter-btn" onclick="filterPlants('Outdoor')">Outdoor 🌳</button>
+                <button class="filter-btn" onclick="filterPlants('Pet-Friendly')">Pet-Friendly 🐶</button>
+            </div>
+            <div class="product-grid" id="productGrid">
+                </div>
+        </div>
+    </section>
+
+    <div id="cartOverlay" class="overlay" style="display: none; opacity: 0;">
+        <div class="glass-box cart-box">
+            <div class="cart-header">
+                <h2>Your Cart 🛒</h2>
+                <i class="fa-solid fa-xmark close-icon" onclick="closeCart()"></i>
+            </div>
+            <div id="cartItemsList"></div>
+            <div class="cart-summary">
+                <p>Delivery: ₹50</p>
+                <h3>Total: ₹<span id="cartTotal">0</span></h3>
+            </div>
+            <button class="btn-primary" style="width: 100%; margin-top: 15px;" onclick="startCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <div id="paymentOverlay" class="overlay" style="display: none; opacity: 0;">
+        <div class="glass-box payment-box">
+            <h2 id="payTitle">Secure Payment 💳</h2>
+            <p id="paySubtitle">Processing via Razorpay/UPI</p>
+            
+            <div id="paymentForm">
+                <div class="pay-options">
+                    <label><input type="radio" name="pay" checked> UPI (GPay/PhonePe)</label>
+                    <label><input type="radio" name="pay"> Credit/Debit Card</label>
+                </div>
+                <input type="text" placeholder="Enter UPI ID / Card Details" style="width:100%; margin-bottom:15px; padding:10px; border-radius:8px; border:1px solid #ccc;">
+                <button class="btn-primary" style="width: 100%;" onclick="processAutoPayment()">Pay Now</button>
+            </div>
+
+            <div id="payLoader" class="loader-container" style="display: none;">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px; font-weight: bold;">Processing Payment... Please don't refresh.</p>
+            </div>
+            
+            <div id="paySuccess" style="display: none; color: #2d6a4f;">
+                <i class="fa-solid fa-circle-check" style="font-size: 50px; margin-bottom: 10px;"></i>
+                <h2>Payment Successful!</h2>
+                <p>Order Placed Successfully. Delivery expected in 3 days.</p>
+                <button class="btn-primary" style="margin-top:20px;" onclick="closePayment()">Back to Home</button>
+            </div>
+        </div>
+    </div>
+
+    <section id="adminSection" style="display: none;">
+        <div class="admin-sidebar">
+            <h2>⚙️ Admin Panel</h2>
+            <a href="#" class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+            <a href="#"><i class="fa-solid fa-leaf"></i> Manage Plants</a>
+            <a href="#"><i class="fa-solid fa-box"></i> Orders</a>
+            <a href="#" onclick="logoutAdmin()" style="color: #ff6b6b; margin-top: auto;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+        <div class="admin-content">
+            <h1>Welcome Boss!</h1>
+            <p>Store Overview</p>
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Total Sales</h3><h2>₹24,500</h2></div>
+                <div class="stat-card"><h3>Active Orders</h3><h2>8</h2></div>
+                <div class="stat-card"><h3>Out of Stock</h3><h2>2</h2></div>
+            </div>
+            <h3 style="margin-top: 30px;">Recent Orders</h3>
+            <table class="admin-table">
+                <tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Status</th></tr>
+                <tr><td>#ORD-789</td><td>Rahul T.</td><td>₹850</td><td><span class="status-green">Processing</span></td></tr>
+                <tr><td>#ORD-788</td><td>Sneha M.</td><td>₹450</td><td><span class="status-green">Delivered</span></td></tr>
+            </table>
+        </div>
+    </section>
 
     <script src="script.js"></script>
 </body>
