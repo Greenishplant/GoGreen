@@ -1,137 +1,266 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Greenish Plant | Premium Store</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
-
-body{
-height:100vh;
-background:linear-gradient(-45deg,#0f5132,#198754,#20c997,#0f5132);
-background-size:400% 400%;
-animation:bg 10s ease infinite;
-display:flex;
-justify-content:center;
-align-items:center;
-overflow:hidden;
-}
-
-@keyframes bg{
-0%{background-position:0% 50%}
-50%{background-position:100% 50%}
-100%{background-position:0% 50%}
-}
-
-.glass{
-background:rgba(255,255,255,0.1);
-backdrop-filter:blur(15px);
-padding:40px;
-border-radius:20px;
-box-shadow:0 8px 32px rgba(0,0,0,0.3);
-width:350px;
-text-align:center;
-color:white;
-animation:fade 1s ease-in-out;
-}
-
-@keyframes fade{
-from{opacity:0;transform:translateY(-20px)}
-to{opacity:1;transform:translateY(0)}
-}
-
-input{
-width:100%;
-padding:12px;
-margin:10px 0;
-border:none;
-border-radius:10px;
-outline:none;
-}
-
-button{
-width:100%;
-padding:12px;
-border:none;
-border-radius:10px;
-background:#20c997;
-color:white;
-font-weight:bold;
-cursor:pointer;
-transition:0.3s;
-}
-
-button:hover{
-background:#198754;
-transform:scale(1.05);
-}
-
-h2{margin-bottom:20px}
-
-#popup{
-position:fixed;
-width:100%;
-height:100%;
-background:black;
-color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-font-size:28px;
-animation:pop 2s forwards;
-}
-
-@keyframes pop{
-0%{opacity:1}
-100%{opacity:0;visibility:hidden}
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greenish Plant - Premium Store</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        :root { --primary: #2d6a4f; --bg: #eaf4f0; --text: #1b4332; --glass: rgba(255, 255, 255, 0.95); }
+        [data-theme="dark"] { --bg: #121212; --text: #e0e0e0; --primary: #40916c; --glass: rgba(30, 30, 30, 0.95); }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; transition: 0.3s; }
+        
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--glass); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { font-size: 24px; font-weight: 700; color: var(--primary); }
+        nav { display: flex; gap: 20px; align-items: center; }
+        nav a { font-weight: 600; cursor: pointer; text-decoration: none; color: var(--text); }
+        
+        .page-section { min-height: 80vh; padding: 40px 5%; display: none; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; margin-top: 20px; }
+        .card { background: white; padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #ccc; cursor: pointer; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .card img { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; }
+        
+        .btn-primary { padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 5000; padding: 20px; }
+        .modal { background: var(--glass); padding: 30px; border-radius: 20px; width: 100%; max-width: 450px; text-align: center; position: relative; }
+        .close-icon { position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 20px; color: red; }
+        
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 10px; outline: none; background: white; }
+        
+        .admin-table { width: 100%; background: white; border-collapse: collapse; margin-top: 20px; color: black; }
+        .admin-table th, .admin-table td { padding: 15px; border: 1px solid #ddd; text-align: left; }
+        
+        @media (max-width: 768px) { header { flex-direction: column; gap: 10px; } nav { flex-wrap: wrap; justify-content: center; } .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+    </style>
 </head>
-
 <body>
 
-<div id="popup">
-🌿 Welcome to Greenish Plant<br>
-Developed by Vivek Sharma
-</div>
+    <div id="canvas-container"></div>
 
-<div class="glass" id="loginBox">
-<h2>Greenish Login</h2>
-<input id="name" placeholder="Enter Name">
-<input id="phone" placeholder="Enter Phone">
-<button onclick="login()">Login</button>
-</div>
+    <div id="loginOverlay" class="overlay" style="display: flex;">
+        <div class="modal">
+            <h2 style="color:var(--primary);">🌿 Greenish Login</h2>
+            <input type="number" id="mobile" placeholder="Enter Mobile Number">
+            <button class="btn-primary" onclick="System.login()">Verify OTP</button>
+            <p onclick="System.adminLogin()" style="margin-top: 15px; font-size: 13px; color: var(--primary); cursor: pointer; text-decoration: underline;">Admin Access</p>
+        </div>
+    </div>
 
-<script>
+    <header id="navBar" style="display: none;">
+        <div class="logo">🌿 Greenish</div>
+        <nav>
+            <a onclick="System.toggleTheme()"><i class="fa-solid fa-moon"></i></a>
+            <a onclick="UI.show('homeSec')">Home</a>
+            <a onclick="UI.show('shopSec')">Shop</a>
+            <a onclick="UI.show('orderSec')">📦 Orders</a>
+            <a onclick="Cart.open()" style="background:var(--primary); color:white; padding:5px 15px; border-radius:20px;"><i class="fa-solid fa-cart-shopping"></i> Cart (<span id="cartCount">0</span>)</a>
+            <a onclick="location.reload()"><i class="fa-solid fa-right-from-bracket"></i></a>
+        </nav>
+    </header>
 
-function login(){
+    <div id="app" style="display: none;">
+        <section id="homeSec" class="page-section" style="display: block; text-align:center; padding-top:10vh;">
+            <h1 style="font-size: 3rem; margin-bottom: 20px;">Bring Nature <br><span style="color:var(--primary)">To Your Home</span></h1>
+            <p>Premium 3D Plant Store with Java Backend.</p>
+            <button class="btn-primary" style="width: auto; padding: 15px 30px; margin-top: 20px;" onclick="UI.show('shopSec')">Start Shopping</button>
+        </section>
 
-fetch(window.location.origin + "/api/login",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-name:document.getElementById("name").value,
-phone:document.getElementById("phone").value
-})
-})
-.then(r=>r.json())
-.then(data=>{
+        <section id="shopSec" class="page-section">
+            <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto;">
+                <button class="btn-primary" style="width:auto; padding:8px 15px;" onclick="Shop.render('All')">All</button>
+                <button class="btn-primary" style="width:auto; padding:8px 15px; background:white; color:black; border:1px solid var(--primary);" onclick="Shop.render('Indoor')">Indoor</button>
+                <button class="btn-primary" style="width:auto; padding:8px 15px; background:white; color:black; border:1px solid var(--primary);" onclick="Shop.render('Outdoor')">Outdoor</button>
+                <input type="text" id="search" placeholder="Search plants..." style="padding:8px; margin:0; flex:1;" onkeyup="Shop.search()">
+            </div>
+            <div class="product-grid" id="grid"></div>
+        </section>
 
-if(data.role==="ADMIN"){
-alert("Welcome Admin 🚀")
-}
-else{
-alert("Welcome "+data.name+" 🌿")
-}
+        <section id="orderSec" class="page-section">
+            <h2>📦 My Orders</h2>
+            <div id="myOrdersList" style="margin-top:20px; overflow-x:auto;"></div>
+        </section>
+        
+        <section id="adminSec" class="page-section">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>⚙️ Live Java Database</h2>
+                <button class="btn-primary" style="width:auto;" onclick="Admin.fetch()">Refresh SQL</button>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="admin-table">
+                    <thead><tr style="background:var(--primary); color:white;"><th>ID</th><th>Address</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody id="adminTable"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
 
-})
-.catch(e=>alert("Server Error"))
+    <div id="cartOverlay" class="overlay">
+        <div class="modal" style="text-align: left;">
+            <i class="fa-solid fa-xmark close-icon" onclick="UI.close('cartOverlay')"></i>
+            <h2>Your Cart 🛒</h2>
+            <div id="cartList" style="max-height: 250px; overflow-y: auto; margin: 15px 0;"></div>
+            <div style="display:flex; gap:10px;"><input type="text" id="promo" placeholder="Promo (VIVA50)"><button class="btn-primary" style="width:auto; margin:10px 0;" onclick="Cart.applyPromo()">Apply</button></div>
+            <h3 style="text-align: right; margin-top:10px;">Total: ₹<span id="totalAmt">0</span></h3>
+            <button class="btn-primary" onclick="Cart.checkout()">Secure Checkout</button>
+        </div>
+    </div>
 
-}
+    <div id="payOverlay" class="overlay">
+        <div class="modal" style="text-align: left;">
+            <i class="fa-solid fa-xmark close-icon" onclick="UI.close('payOverlay')"></i>
+            <div id="payForm">
+                <h2>Checkout</h2>
+                <textarea id="addr" placeholder="Full Delivery Address" rows="2"></textarea>
+                <div style="text-align:center; background:#f9f9f9; padding:10px; border-radius:10px; margin-bottom:15px; color:black;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=upi://pay?pa=vivek@upi" style="border-radius:10px;">
+                    <p style="font-size:12px; margin-top:5px;">Pay via UPI</p>
+                </div>
+                <button class="btn-primary" onclick="JavaAPI.commit()">Place Order</button>
+            </div>
+            <div id="payLoader" style="display:none; text-align:center;">
+                <i class="fa-solid fa-circle-notch fa-spin" style="font-size:40px; color:var(--primary); margin-bottom:15px;"></i>
+                <p>Sending to Java Server...</p>
+            </div>
+            <div id="payDone" style="display:none; text-align:center;">
+                <i class="fa-solid fa-circle-check" style="font-size:50px; color:var(--primary); margin-bottom:15px;"></i>
+                <h2>Order Confirmed!</h2>
+                <p>Order ID: <span id="txnId"></span></p>
+                <button class="btn-primary" style="margin-top:15px;" onclick="location.reload()">Done</button>
+            </div>
+        </div>
+    </div>
 
-</script>
+    <script>
+        // 🚀 CORE LOGIC
+        const products = [
+            { id: 1, name: "Monstera Deliciosa", cat: "Indoor", price: 499, img: "https://images.pexels.com/photos/3125195/pexels-photo-3125195.jpeg?w=400" },
+            { id: 2, name: "Snake Plant", cat: "Indoor", price: 299, img: "https://images.pexels.com/photos/2123482/pexels-photo-2123482.jpeg?w=400" },
+            { id: 3, name: "Ficus Bonsai", cat: "Indoor", price: 899, img: "https://images.pexels.com/photos/3273934/pexels-photo-3273934.jpeg?w=400" },
+            { id: 4, name: "Aloe Vera", cat: "Outdoor", price: 199, img: "https://images.pexels.com/photos/1334605/pexels-photo-1334605.jpeg?w=400" },
+            { id: 5, name: "Red Rose Plant", cat: "Outdoor", price: 349, img: "https://images.pexels.com/photos/736230/pexels-photo-736230.jpeg?w=400" },
+            { id: 6, name: "Ceramic Pot", cat: "Accessories", price: 399, img: "https://images.pexels.com/photos/6601444/pexels-photo-6601444.jpeg?w=400" }
+        ];
 
+        let cart = []; let discount = 0;
+
+        const System = {
+            login() { 
+                if(document.getElementById("mobile").value.length === 10) {
+                    gsap.to("#loginOverlay", { opacity: 0, duration: 0.3, onComplete: () => {
+                        document.getElementById("loginOverlay").style.display = "none";
+                        document.getElementById("navBar").style.display = "flex";
+                        document.getElementById("app").style.display = "block";
+                    }});
+                } else alert("Enter 10 digit number!");
+            },
+            adminLogin() {
+                if(prompt("Admin ID:") === "Vivek02" && prompt("Pass:") === "Vivek1234@") {
+                    this.login(); setTimeout(() => UI.show('adminSec'), 500);
+                }
+            },
+            toggleTheme() {
+                const b = document.body; b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            }
+        };
+
+        const UI = {
+            show(id) {
+                document.querySelectorAll('.page-section').forEach(s => s.style.display = 'none');
+                document.getElementById(id).style.display = 'block';
+                if(id === 'orderSec') this.renderOrders();
+                if(id === 'adminSec') Admin.fetch();
+            },
+            close(id) { document.getElementById(id).style.display = "none"; },
+            renderOrders() {
+                let db = JSON.parse(localStorage.getItem('my_orders')) || [];
+                let html = "<table class='admin-table'><tr><th>Order ID</th><th>Amount</th><th>Status</th></tr>";
+                db.reverse().forEach(o => { html += `<tr><td><b>${o.id}</b></td><td>₹${o.total}</td><td style='color:green'>Success</td></tr>`; });
+                document.getElementById("myOrdersList").innerHTML = html + "</table>";
+            }
+        };
+
+        const Shop = {
+            render(filter) {
+                const grid = document.getElementById("grid"); grid.innerHTML = "";
+                let q = document.getElementById("search").value.toLowerCase();
+                products.forEach(p => {
+                    if((filter === 'All' || p.cat === filter) && p.name.toLowerCase().includes(q)) {
+                        grid.innerHTML += `<div class="card"><img src="${p.img}"><h3>${p.name}</h3><p style="color:var(--primary); font-weight:bold; margin-bottom:10px;">₹${p.price}</p><button class="btn-primary" onclick="Cart.add(${p.id})">Add to Cart</button></div>`;
+                    }
+                });
+            },
+            search() { this.render('All'); }
+        };
+
+        const Cart = {
+            add(id) { cart.push(products.find(x => x.id === id)); document.getElementById("cartCount").innerText = cart.length; alert("Added!"); },
+            open() {
+                document.getElementById("cartOverlay").style.display = "flex";
+                let list = document.getElementById("cartList"); list.innerHTML = ""; let total = 0;
+                cart.forEach((i, idx) => { total += i.price; list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${i.name}</span><span>₹${i.price} <i class="fa-solid fa-trash" style="color:red; cursor:pointer;" onclick="cart.splice(${idx},1); Cart.open();"></i></span></div>`; });
+                document.getElementById("totalAmt").innerText = total > 0 ? total + 50 - discount : 0;
+            },
+            applyPromo() { if(document.getElementById("promo").value === "VIVA50" && discount === 0) { discount = 50; this.open(); alert("Coupon Applied!"); } },
+            checkout() { if(cart.length === 0) return alert("Cart empty!"); UI.close('cartOverlay'); document.getElementById("payOverlay").style.display = "flex"; }
+        };
+
+        const JavaAPI = {
+            async commit() {
+                let addr = document.getElementById("addr").value;
+                if(!addr) return alert("Address please!");
+                
+                document.getElementById("payForm").style.display = "none";
+                document.getElementById("payLoader").style.display = "block";
+
+                let order = { id: "ORD-" + Math.floor(Math.random() * 9999), address: addr, total: document.getElementById("totalAmt").innerText, date: new Date().toLocaleString(), items: [...cart] };
+
+                try {
+                    await fetch('/api/commitTransaction', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(order) });
+                    
+                    let localDb = JSON.parse(localStorage.getItem('my_orders')) || [];
+                    localDb.push(order); localStorage.setItem('my_orders', JSON.stringify(localDb));
+
+                    setTimeout(() => {
+                        document.getElementById("payLoader").style.display = "none"; document.getElementById("payDone").style.display = "block";
+                        document.getElementById("txnId").innerText = order.id; confetti(); cart = []; document.getElementById("cartCount").innerText = "0";
+                    }, 2000);
+                } catch(e) { alert("Server Busy!"); location.reload(); }
+            }
+        };
+
+        const Admin = {
+            async fetch() {
+                try {
+                    const res = await fetch('/api/fetchOrders'); const orders = await res.json();
+                    let html = ""; orders.reverse().forEach(o => { html += `<tr><td><b>${o.id}</b></td><td>${o.address}</td><td>₹${o.total}</td><td><span style="background:#ffd166; padding:3px 8px; border-radius:10px; font-size:12px; font-weight:bold;">Processing</span></td></tr>`; });
+                    document.getElementById("adminTable").innerHTML = html;
+                } catch(e) { document.getElementById("adminTable").innerHTML = "<tr><td colspan='4'>Server offline or starting...</td></tr>"; }
+            }
+        };
+
+        window.onload = () => { Shop.render('All'); init3D(); };
+
+        // 🎨 3D TorusKnot
+        function init3D() {
+            const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+            const shape = new THREE.Mesh(new THREE.TorusKnotGeometry(1.5, 0.4, 100, 16), new THREE.MeshStandardMaterial({ color: 0x40916c, wireframe: true }));
+            scene.add(shape); const light = new THREE.PointLight(0xffffff, 1); light.position.set(10, 10, 10); scene.add(light); camera.position.z = 6;
+            function animate() { requestAnimationFrame(animate); shape.rotation.x += 0.005; shape.rotation.y += 0.005; renderer.render(scene, camera); } animate();
+        }
+    </script>
 </body>
-</html>
+  </html>
+                                                   
