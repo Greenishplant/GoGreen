@@ -53,7 +53,7 @@
         .card { background: white; padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #eee; transition: 0.3s; position: relative; overflow: hidden; }
         .card:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.05); transform: translateY(-5px); }
         .card img { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; }
-        .stock-badge { position: absolute; top: 10px; right: 10px; background: #ff9f00; color: white; padding: 3px 8px; font-size: 10px; border-radius: 10px; font-weight: bold; }
+        .stock-badge { position: absolute; top: 10px; right: 10px; background: #ff9f00; color: white; padding: 3px 8px; font-size: 10px; border-radius: 10px; font-weight: bold; z-index: 5; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .stat-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; border: 1px solid #eee; }
@@ -68,6 +68,7 @@
         .bg-proc { background: #ffeaa7; color: #d63031; }
         .bg-ship { background: #81ecec; color: #0984e3; }
         .bg-succ { background: #55efc4; color: #00b894; }
+        .bg-canc { background: #ff7675; color: white; } /* Cancelled Badge */
 
         /* RAZORPAY CLONE */
         .rzp-box { background: white; width: 380px; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 50px rgba(0,0,0,0.3); font-family: -apple-system, sans-serif; margin:auto; }
@@ -115,7 +116,7 @@
                         <select id="userRole" onchange="toggleLoginType()">
                             <option value="customer">Login as Customer</option>
                             <option value="seller">Login as Seller</option>
-                            <option value="admin">Login as Super Admin</option>
+                            <option value="admin">Login as Admin</option>
                         </select>
                     </div>
 
@@ -172,20 +173,34 @@
     <div id="customerDash" class="dashboard-layout hidden">
         <div class="sidebar">
             <h2>🌿 Customer</h2>
-            <a onclick="showCustTab('c-shop')" class="active"><i class="fa-solid fa-store"></i> Shop Plants</a>
-            <a onclick="showCustTab('c-cart')"><i class="fa-solid fa-cart-shopping"></i> My Cart (<span id="cartCount">0</span>)</a>
-            <a onclick="showCustTab('c-orders')"><i class="fa-solid fa-box-open"></i> Live Tracking</a>
-            <a onclick="showCustTab('c-profile')"><i class="fa-solid fa-user"></i> My Profile</a>
+            <a onclick="showCustTab('c-home')" class="active" id="nav-c-home"><i class="fa-solid fa-house"></i> Home</a>
+            <a onclick="showCustTab('c-shop')" id="nav-c-shop"><i class="fa-solid fa-store"></i> Shop Plants</a>
+            <a onclick="showCustTab('c-cart')" id="nav-c-cart"><i class="fa-solid fa-cart-shopping"></i> My Cart (<span id="cartCount">0</span>)</a>
+            <a onclick="showCustTab('c-orders')" id="nav-c-orders"><i class="fa-solid fa-box-open"></i> Live Tracking</a>
+            <a onclick="showCustTab('c-profile')" id="nav-c-profile"><i class="fa-solid fa-user"></i> My Profile</a>
             <a onclick="logout()" style="color: #ff7675; margin-top: auto;"><i class="fa-solid fa-power-off"></i> Logout</a>
         </div>
         <div class="main-content">
-            <div id="c-shop" class="cust-tab">
+            
+            <div id="c-home" class="cust-tab">
+                <div style="background: linear-gradient(135deg, rgba(45,106,79,0.9), rgba(27,67,50,0.9)), url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=1000') center/cover; padding: 60px 40px; border-radius: 20px; color: white; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                    <h1 style="font-size: 40px; margin-bottom: 15px;">Welcome to Greenish! 🌿</h1>
+                    <p style="font-size: 16px; margin-bottom: 25px; opacity: 0.9;">India's Premium Enterprise Marketplace for Exotic Plants & Accessories.</p>
+                    <button class="btn-primary" style="width: auto; padding: 12px 30px; background: #55efc4; color: #1b4332; font-size: 16px;" onclick="showCustTab('c-shop')">Shop Now <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                
+                <h2 style="color:#1b4332; margin-bottom:15px; font-size:22px;"><i class="fa-solid fa-star" style="color:#ff9f00;"></i> Featured Products</h2>
+                <div class="product-grid" id="homePlantsGrid"></div>
+            </div>
+
+            <div id="c-shop" class="cust-tab hidden">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <h1>Premium Plants</h1>
                     <input type="text" id="searchBar" placeholder="Search plants..." style="width:200px; padding:10px; border-radius:8px; border:1px solid #ccc;" onkeyup="searchPlants()">
                 </div>
                 <div class="product-grid" id="plantsGrid"></div>
             </div>
+            
             <div id="c-cart" class="cust-tab hidden">
                 <h1>Secure Checkout</h1>
                 <div id="cartItemsList" style="background:white; padding:20px; border-radius:10px; margin-top:20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);"></div>
@@ -193,6 +208,7 @@
                 <textarea id="checkoutAddress" placeholder="Enter Full Delivery Address..." style="margin-top:15px;"></textarea>
                 <button class="btn-primary" style="width:250px; background:#ff9f00;" onclick="initRazorpay()">Proceed to Pay</button>
             </div>
+            
             <div id="c-orders" class="cust-tab hidden">
                 <h1>Live Order Tracking</h1>
                 <table style="margin-top:20px;">
@@ -200,6 +216,7 @@
                     <tbody id="customerOrderBody"></tbody>
                 </table>
             </div>
+            
             <div id="c-profile" class="cust-tab hidden">
                 <h1>My Profile</h1>
                 <div class="glass-box" style="text-align:left; margin-top:20px; box-shadow:none; border:1px solid #eee; width:100%;">
@@ -250,7 +267,7 @@
                         <input type="text" id="newProdName" placeholder="Plant Name (e.g. Bonsai)">
                         <input type="number" id="newProdPrice" placeholder="Selling Price (₹)">
                         <input type="number" id="newProdStock" placeholder="Initial Stock Quantity">
-                        <input type="text" id="newProdImg" placeholder="Image URL (Or leave empty for default)">
+                        <input type="text" id="newProdImg" placeholder="Image URL (Or leave empty)">
                         <button class="btn-primary" onclick="addNewProduct()">Upload Product</button>
                     </div>
                     
@@ -263,13 +280,12 @@
                     </div>
                 </div>
             </div>
-            
         </div>
     </div>
 
     <div id="adminDash" class="dashboard-layout hidden">
         <div class="sidebar">
-            <h2 style="color: #ff7675;">👑 Super Admin</h2>
+            <h2 style="color: #ff7675;">👑 Admin Panel</h2>
             <a onclick="showAdminTab('a-master')" class="active"><i class="fa-solid fa-globe"></i> Master Control</a>
             <a onclick="showAdminTab('a-allorders')"><i class="fa-solid fa-list-ul"></i> Global Order Log</a>
             <a onclick="showAdminTab('a-sellers')"><i class="fa-solid fa-store"></i> Seller Directory</a>
@@ -287,7 +303,7 @@
             <div id="a-allorders" class="admin-tab hidden">
                 <h1>Global Operations Log</h1>
                 <table>
-                    <thead><tr><th>Order ID</th><th>Customer Info</th><th>Address</th><th>Amount</th><th>Status</th><th>Override</th></tr></thead>
+                    <thead><tr><th>Order ID</th><th>Customer Info</th><th>Address</th><th>Amount</th><th>Status Update</th><th>Action</th></tr></thead>
                     <tbody id="adminOrderBody"></tbody>
                 </table>
             </div>
@@ -331,14 +347,13 @@
 
     <script>
         // --- 1. THE DATABASE WITH STOCK MANAGEMENT ---
-        // Basic 12 products list with Default Stock
         const defaultProducts = [
             { id: 1, name: "Monstera Deliciosa", price: 499, img: "https://images.pexels.com/photos/3125195/pexels-photo-3125195.jpeg?w=400", stock: 15, sellerPhone: 'system' },
             { id: 2, name: "Snake Plant", price: 299, img: "https://images.pexels.com/photos/2123482/pexels-photo-2123482.jpeg?w=400", stock: 8, sellerPhone: 'system' },
             { id: 3, name: "Ficus Bonsai", price: 899, img: "https://images.pexels.com/photos/3273934/pexels-photo-3273934.jpeg?w=400", stock: 3, sellerPhone: 'system' },
             { id: 4, name: "Aloe Vera", price: 199, img: "aloevera.png", stock: 20, sellerPhone: 'system' }, 
             { id: 5, name: "Red Rose Plant", price: 349, img: "https://images.pexels.com/photos/736230/pexels-photo-736230.jpeg?w=400", stock: 12, sellerPhone: 'system' },
-            { id: 6, name: "Peace Lily", price: 450, img: "https://images.pexels.com/photos/1105019/pexels-photo-1105019.jpeg?w=400", stock: 0, sellerPhone: 'system' }, // Default out of stock for testing
+            { id: 6, name: "Peace Lily", price: 450, img: "https://images.pexels.com/photos/1105019/pexels-photo-1105019.jpeg?w=400", stock: 0, sellerPhone: 'system' }, 
             { id: 7, name: "Areca Palm", price: 699, img: "https://images.pexels.com/photos/1084199/pexels-photo-1084199.jpeg?w=400", stock: 5, sellerPhone: 'system' },
             { id: 8, name: "Spider Plant", price: 150, img: "https://images.pexels.com/photos/3125195/pexels-photo-3125195.jpeg?w=400", stock: 10, sellerPhone: 'system' },
             { id: 9, name: "Rubber Plant", price: 550, img: "https://images.pexels.com/photos/2123482/pexels-photo-2123482.jpeg?w=400", stock: 7, sellerPhone: 'system' },
@@ -360,7 +375,7 @@
         function saveDB() {
             localStorage.setItem('gm_users', JSON.stringify(db.users));
             localStorage.setItem('gm_orders', JSON.stringify(db.orders));
-            localStorage.setItem('gm_products', JSON.stringify(db.products)); // Save new products and stock updates
+            localStorage.setItem('gm_products', JSON.stringify(db.products));
         }
 
         // --- 2. AUTHENTICATION LOGIC ---
@@ -418,13 +433,8 @@
                 
                 if(!db.users.find(u => u.phone === userObj.phone)) {
                     db.users.push(userObj); 
-                    
-                    // PRE-ASSIGN PLANT IF IT'S A NEW SELLER
                     if(userObj.role === 'seller') {
-                        db.products.push({
-                            id: Date.now(), name: "Seller's Starter Jade Plant", price: 250, 
-                            stock: 15, img: "jadeplant.png", sellerPhone: userObj.phone
-                        });
+                        db.products.push({ id: Date.now(), name: "Seller's Starter Jade Plant", price: 250, stock: 15, img: "jadeplant.png", sellerPhone: userObj.phone });
                     }
                     saveDB();
                 }
@@ -441,7 +451,7 @@
 
         function adminDirectLogin() {
             if(document.getElementById('adminId').value === "Vivek02" && document.getElementById('adminPass').value === "Vivek1234@") {
-                currentUser = { role: 'admin', name: 'Super Admin', phone: 'SYSTEM', pin: 'HQ' };
+                currentUser = { role: 'admin', name: 'Admin', phone: 'SYSTEM', pin: 'HQ' };
                 localStorage.setItem('gm_activeUser', JSON.stringify(currentUser));
                 document.getElementById('loginSystem').classList.add('hidden');
                 loadDashboard();
@@ -461,7 +471,9 @@
                 document.getElementById('p-name').innerText = currentUser.name;
                 document.getElementById('p-phone').innerText = currentUser.phone;
                 document.getElementById('p-pin').innerText = currentUser.pin;
+                renderHome(); // Render Home features
                 renderShop();
+                showCustTab('c-home'); // SET HOME PAGE AS DEFAULT
             } 
             else if(currentUser.role === 'seller') { document.getElementById('sellerDash').classList.remove('hidden'); }
             else if(currentUser.role === 'admin') { document.getElementById('adminDash').classList.remove('hidden'); }
@@ -469,11 +481,38 @@
             refreshActiveViews();
         }
 
-        function showCustTab(id) { document.querySelectorAll('.cust-tab').forEach(t => t.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+        function showCustTab(id) { 
+            document.querySelectorAll('.cust-tab').forEach(t => t.classList.add('hidden')); 
+            document.getElementById(id).classList.remove('hidden'); 
+            
+            // Highlight sidebar tab
+            document.querySelectorAll('#customerDash .sidebar a').forEach(a => a.classList.remove('active'));
+            document.getElementById('nav-' + id).classList.add('active');
+        }
         function showSellerTab(id) { document.querySelectorAll('.seller-tab').forEach(t => t.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
         function showAdminTab(id) { document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
 
         // --- 4. CUSTOMER SHOP & CART ---
+        
+        function renderHome() {
+            let grid = document.getElementById("homePlantsGrid"); grid.innerHTML = "";
+            // Show only first 4 items as Featured
+            db.products.slice(0, 4).forEach(plant => {
+                let isOutOfStock = plant.stock <= 0;
+                let btnHTML = isOutOfStock 
+                    ? `<button class="btn-primary" disabled style="background:gray;">Out of Stock</button>`
+                    : `<button class="btn-primary" onclick="addToCart(${plant.id}, '${plant.name}', ${plant.price})">Add to Cart</button>`;
+                
+                grid.innerHTML += `
+                    <div class="card">
+                        <img src="${plant.img}" alt="${plant.name}">
+                        <h3 style="font-size:16px;">${plant.name}</h3>
+                        <p style="font-size:18px; font-weight:bold; color:#2d6a4f; margin:10px 0;">₹${plant.price}</p>
+                        ${btnHTML}
+                    </div>`;
+            });
+        }
+
         function renderShop() {
             let grid = document.getElementById("plantsGrid"); grid.innerHTML = "";
             let query = document.getElementById("searchBar") ? document.getElementById("searchBar").value.toLowerCase() : "";
@@ -486,7 +525,7 @@
                         : `<button class="btn-primary" onclick="addToCart(${plant.id}, '${plant.name}', ${plant.price})">Add to Cart</button>`;
                     
                     let badgeHTML = isOutOfStock 
-                        ? `<div class="stock-badge" style="background:#e74c3c;">Out of Stock</div>`
+                        ? `<div class="stock-badge" style="background:#ff7675;">Out of Stock</div>`
                         : `<div class="stock-badge">In Stock: ${plant.stock}</div>`;
 
                     grid.innerHTML += `
@@ -544,7 +583,6 @@
         }
 
         function finishOrder() {
-            // Deduct Stock Logic
             cart.forEach(cartItem => {
                 let product = db.products.find(p => p.id === cartItem.id);
                 if(product && product.stock > 0) product.stock -= 1;
@@ -568,7 +606,8 @@
             
             confetti({ particleCount: 150, spread: 80, zIndex: 6000 });
             showCustTab('c-orders');
-            renderShop(); // Refresh shop to show updated stock
+            renderShop(); 
+            renderHome();
             refreshActiveViews();
         }
 
@@ -577,27 +616,15 @@
             let name = document.getElementById('newProdName').value;
             let price = parseInt(document.getElementById('newProdPrice').value);
             let stock = parseInt(document.getElementById('newProdStock').value);
-            let img = document.getElementById('newProdImg').value || 'ceramicpot.png'; // Fallback to your local image
+            let img = document.getElementById('newProdImg').value || 'ceramicpot.png';
 
             if(!name || !price || !stock) return alert("Please fill Name, Price, and Stock!");
 
-            let newPlant = {
-                id: Date.now(),
-                name: name,
-                price: price,
-                stock: stock,
-                img: img,
-                sellerPhone: currentUser.phone
-            };
-
-            db.products.push(newPlant);
-            saveDB();
+            let newPlant = { id: Date.now(), name: name, price: price, stock: stock, img: img, sellerPhone: currentUser.phone };
+            db.products.push(newPlant); saveDB();
             
-            // Clear Form
-            document.getElementById('newProdName').value = "";
-            document.getElementById('newProdPrice').value = "";
-            document.getElementById('newProdStock').value = "";
-            document.getElementById('newProdImg').value = "";
+            document.getElementById('newProdName').value = ""; document.getElementById('newProdPrice').value = "";
+            document.getElementById('newProdStock').value = ""; document.getElementById('newProdImg').value = "";
             
             alert("New Plant Added to Global Shop Successfully!");
             refreshActiveViews();
@@ -609,46 +636,63 @@
                 let myOrders = db.orders.filter(o => o.customerPhone === currentUser.phone);
                 let tbody = document.getElementById('customerOrderBody'); tbody.innerHTML = '';
                 myOrders.reverse().forEach(o => {
-                    let badge = o.status === 'Processing' ? 'bg-proc' : (o.status === 'Shipped' ? 'bg-ship' : 'bg-succ');
+                    let badge = o.status === 'Processing' ? 'bg-proc' : (o.status === 'Shipped' ? 'bg-ship' : (o.status === 'Delivered' ? 'bg-succ' : 'bg-canc'));
                     tbody.innerHTML += `<tr><td><b>#${o.id}</b></td><td>${o.address}</td><td>₹${o.total}</td><td><span class="badge ${badge}">${o.status}</span></td></tr>`;
                 });
             }
             
             if(currentUser.role === 'seller') {
                 document.getElementById('s-rev').innerText = db.orders.reduce((sum, o) => sum + parseInt(o.total), 0);
-                document.getElementById('s-pending').innerText = db.orders.filter(o => o.status !== 'Delivered').length;
+                document.getElementById('s-pending').innerText = db.orders.filter(o => o.status !== 'Delivered' && o.status !== 'Cancelled').length;
 
                 let oBody = document.getElementById('sellerOrderBody'); oBody.innerHTML = '';
                 let uBody = document.getElementById('sellerUpdateBody'); uBody.innerHTML = '';
                 db.orders.slice().reverse().forEach(o => {
                     oBody.innerHTML += `<tr><td><b>#${o.id}</b></td><td>${o.customerName}</td><td>${o.address}</td><td>₹${o.total}</td><td><button class="btn-primary" style="padding:5px; margin:0;" onclick="alert('Printing Label for ${o.id}')">Print Label</button></td></tr>`;
-                    uBody.innerHTML += `<tr><td><b>#${o.id}</b></td><td><b>${o.status}</b></td><td><select onchange="updateOrderStatus('${o.id}', this.value)" style="padding:5px;"><option value="Processing" ${o.status==='Processing'?'selected':''}>Processing</option><option value="Shipped" ${o.status==='Shipped'?'selected':''}>Shipped</option><option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option></select></td></tr>`;
+                    
+                    let badge = o.status === 'Processing' ? 'bg-proc' : (o.status === 'Shipped' ? 'bg-ship' : (o.status === 'Delivered' ? 'bg-succ' : 'bg-canc'));
+                    uBody.innerHTML += `<tr><td><b>#${o.id}</b></td><td><span class="badge ${badge}">${o.status}</span></td><td><select onchange="updateOrderStatus('${o.id}', this.value)" style="padding:5px; border-radius:5px;"><option value="Processing" ${o.status==='Processing'?'selected':''}>Processing</option><option value="Shipped" ${o.status==='Shipped'?'selected':''}>Shipped</option><option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option><option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancel Order</option></select></td></tr>`;
                 });
 
-                // UPDATE SELLER INVENTORY TABLE
                 let invBody = document.getElementById('sellerInventoryBody'); invBody.innerHTML = '';
                 let myProducts = db.products.filter(p => p.sellerPhone === currentUser.phone || p.sellerPhone === 'system');
                 myProducts.forEach(p => {
                     let stockStatus = p.stock <= 0 ? '<span style="color:red; font-weight:bold;">Out of Stock</span>' : `<span style="color:green; font-weight:bold;">${p.stock} Available</span>`;
-                    invBody.innerHTML += `<tr><td><img src="${p.img}" style="width:30px; height:30px; border-radius:5px; vertical-align:middle; margin-right:10px;"> ${p.name}</td><td>₹${p.price}</td><td>${stockStatus}</td><td><span class="badge bg-succ">Live on Store</span></td></tr>`;
+                    invBody.innerHTML += `<tr><td><img src="${p.img}" style="width:30px; height:30px; border-radius:5px; vertical-align:middle; margin-right:10px;"> ${p.name}</td><td>₹${p.price}</td><td>${stockStatus}</td><td><span class="badge bg-succ">Live</span></td></tr>`;
                 });
             }
 
             if(currentUser.role === 'admin') {
-                document.getElementById('a-total-rev').innerText = db.orders.reduce((sum, o) => sum + parseInt(o.total), 0);
+                document.getElementById('a-total-rev').innerText = db.orders.filter(o => o.status !== 'Cancelled').reduce((sum, o) => sum + parseInt(o.total), 0);
                 document.getElementById('a-total-orders').innerText = db.orders.length;
                 document.getElementById('a-total-users').innerText = db.users.length;
+                
                 let aBody = document.getElementById('adminOrderBody'); aBody.innerHTML = '';
                 db.orders.slice().reverse().forEach(o => {
-                    let badge = o.status === 'Processing' ? 'bg-proc' : (o.status === 'Shipped' ? 'bg-ship' : 'bg-succ');
-                    aBody.innerHTML += `<tr><td><b>#${o.id}</b></td><td>${o.customerName}</td><td>${o.address}</td><td>₹${o.total}</td><td><span class="badge ${badge}">${o.status}</span></td><td><button style="color:red; border:none; background:none; font-weight:bold; cursor:pointer;" onclick="deleteOrder('${o.id}')"><i class="fa-solid fa-trash"></i> Drop</button></td></tr>`;
+                    let badge = o.status === 'Processing' ? 'bg-proc' : (o.status === 'Shipped' ? 'bg-ship' : (o.status === 'Delivered' ? 'bg-succ' : 'bg-canc'));
+                    aBody.innerHTML += `
+                        <tr>
+                            <td><b>#${o.id}</b></td>
+                            <td>${o.customerName}</td>
+                            <td>${o.address}</td>
+                            <td>₹${o.total}</td>
+                            <td>
+                                <select onchange="updateOrderStatus('${o.id}', this.value)" style="padding:5px; border-radius:5px; width:110px;">
+                                    <option value="Processing" ${o.status==='Processing'?'selected':''}>Processing</option>
+                                    <option value="Shipped" ${o.status==='Shipped'?'selected':''}>Shipped</option>
+                                    <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
+                                    <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
+                                </select>
+                            </td>
+                            <td><button style="color:red; border:none; background:none; font-weight:bold; cursor:pointer;" onclick="deleteOrder('${o.id}')"><i class="fa-solid fa-trash"></i> Drop</button></td>
+                        </tr>`;
                 });
                 document.getElementById('adminSellersList').innerHTML = db.users.filter(u => u.role === 'seller').map(u => `<li><i class="fa-solid fa-user-tag" style="color:#2d6a4f;"></i> ${u.name} (Ph: ${u.phone})</li>`).join('');
             }
         }
 
         function updateOrderStatus(id, newStatus) { let order = db.orders.find(o => o.id === id); if(order) { order.status = newStatus; saveDB(); refreshActiveViews(); } }
-        function deleteOrder(id) { if(confirm("Cancel order?")) { db.orders = db.orders.filter(o => o.id !== id); saveDB(); refreshActiveViews(); } }
+        function deleteOrder(id) { if(confirm("Permanently delete this order from database?")) { db.orders = db.orders.filter(o => o.id !== id); saveDB(); refreshActiveViews(); } }
 
         // --- 8. 3D BACKGROUND ---
         function init3D() {
