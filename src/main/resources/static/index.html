@@ -16,78 +16,66 @@
         
         #canvas-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
         
-        /* 🔥 PREMIUM LOGIN UI STYLES 🔥 */
-        .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 15px; }
+        /* 🔥 PREMIUM SPLIT-SCREEN LOGIN UI 🔥 */
+        .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 15px; }
         
         .glass-box { 
-            background: rgba(255, 255, 255, 0.95); 
-            padding: 40px; 
-            border-radius: 24px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+            background: rgba(255, 255, 255, 0.98); 
+            border-radius: 20px; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25); 
             width: 100%; 
-            max-width: 420px; 
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.5);
+            max-width: 900px; 
+            display: flex;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.4);
         }
 
-        .gradient-text {
-            background: linear-gradient(45deg, #1b4332, #55efc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
-            font-size: 32px;
-            margin-bottom: 5px;
+        .login-hero {
+            width: 45%;
+            background: linear-gradient(135deg, rgba(27, 67, 50, 0.95), rgba(45, 106, 79, 0.85)), url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600') center/cover;
+            padding: 50px 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        /* Modern Input Groups with Icons */
-        .input-group { position: relative; margin-bottom: 18px; text-align: left; }
+        .login-hero h2 { font-size: 38px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .login-hero p { font-size: 15px; line-height: 1.6; opacity: 0.9; margin-bottom: 40px; }
+        
+        .feature-item { display: flex; align-items: center; margin-bottom: 20px; font-size: 14px; font-weight: 500; }
+        .feature-item i { font-size: 22px; color: #55efc4; margin-right: 15px; }
+
+        .login-form-container {
+            width: 55%;
+            padding: 50px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Modern Input Groups */
+        .input-group { position: relative; margin-bottom: 20px; text-align: left; }
         .input-group i { 
-            position: absolute; 
-            left: 16px; 
-            top: 50%; 
-            transform: translateY(-50%); 
-            color: #2d6a4f; 
-            font-size: 16px; 
-            pointer-events: none; 
-            opacity: 0.8;
+            position: absolute; left: 18px; top: 50%; transform: translateY(-50%); 
+            color: #2d6a4f; font-size: 16px; opacity: 0.7; pointer-events: none; 
         }
         .input-group input, .input-group select { 
-            width: 100%; 
-            padding: 16px 16px 16px 45px; /* Extra left padding for icon */
-            border: 1.5px solid #e1e8e5; 
-            border-radius: 12px; 
-            outline: none; 
-            font-size: 14px; 
-            background: #f9fbf9; 
-            transition: all 0.3s ease; 
-            color: #333;
-            font-weight: 500;
+            width: 100%; padding: 16px 16px 16px 48px; 
+            border: 1.5px solid #e1e8e5; border-radius: 12px; outline: none; 
+            font-size: 14px; background: #f9fbf9; color: #333; font-weight: 500; transition: 0.3s;
         }
         .input-group input:focus, .input-group select:focus { 
-            border-color: #2d6a4f; 
-            background: #fff; 
-            box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.1); 
+            border-color: #2d6a4f; background: #fff; box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.1); 
         }
 
-        /* Premium Button */
         .btn-primary { 
-            padding: 16px; 
-            background: linear-gradient(135deg, #2d6a4f, #1b4332); 
-            color: white; 
-            border: none; 
-            border-radius: 12px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            width: 100%; 
-            transition: 0.3s; 
-            font-size: 16px; 
-            margin-top: 10px; 
-            box-shadow: 0 8px 20px rgba(45, 106, 79, 0.3);
+            padding: 16px; background: linear-gradient(135deg, #2d6a4f, #1b4332); color: white; 
+            border: none; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; 
+            transition: 0.3s; font-size: 16px; margin-top: 10px; box-shadow: 0 8px 20px rgba(45, 106, 79, 0.2);
         }
-        .btn-primary:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 12px 25px rgba(45, 106, 79, 0.4); 
-        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(45, 106, 79, 0.3); }
 
         textarea { width: 100%; padding: 15px; border: 1.5px solid #e1e8e5; border-radius: 12px; outline: none; font-size: 14px; }
         
@@ -131,6 +119,13 @@
         .otp-screen { display: none; padding: 20px; text-align: center; }
         
         .hidden { display: none !important; }
+
+        @media (max-width: 768px) {
+            .glass-box { flex-direction: column; max-width: 450px; }
+            .login-hero { width: 100%; padding: 30px; text-align: center; }
+            .login-form-container { width: 100%; padding: 30px; }
+            .feature-item { justify-content: center; }
+        }
     </style>
 </head>
 <body>
@@ -138,54 +133,89 @@
     <div id="canvas-container"></div>
 
     <div id="loginSystem" class="overlay">
-        
-        <div class="glass-box" id="loginStep1">
-            <div style="margin-bottom: 30px;">
-                <h2 class="gradient-text">🌿 Greenish</h2>
-                <p style="color: #666; font-size: 13px; font-weight: 500;">Secure Enterprise Marketplace</p>
-            </div>
+        <div class="glass-box" id="loginWrapper">
             
-            <div class="input-group">
-                <i class="fa-solid fa-user-shield"></i>
-                <select id="userRole">
-                    <option value="customer">Login as Customer</option>
-                    <option value="seller">Login as Seller</option>
-                    <option value="admin">Login as Admin</option>
-                </select>
+            <div class="login-hero" id="heroSection">
+                <h2><i class="fa-solid fa-leaf"></i> Greenish</h2>
+                <p>Welcome to India's most advanced Enterprise Marketplace for premium plants and accessories.</p>
+                
+                <div class="feature-item">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Secure End-to-End Encrypted Login</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Real-time Live Order Synchronization</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fa-solid fa-truck-fast"></i>
+                    <span>Automated Dispatch & Logistics Tracking</span>
+                </div>
             </div>
 
-            <div class="input-group">
-                <i class="fa-solid fa-phone"></i>
-                <input type="number" id="loginPhone" placeholder="10-Digit Mobile Number">
+            <div class="login-form-container">
+                <div id="loginStep1">
+                    <h3 style="color:#1b4332; font-size: 26px; margin-bottom: 5px;">Welcome Back</h3>
+                    <p style="color: #666; font-size: 14px; margin-bottom: 25px;">Please select your role to proceed.</p>
+                    
+                    <div class="input-group">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <select id="userRole" onchange="toggleLoginType()">
+                            <option value="customer">Login as Customer</option>
+                            <option value="seller">Login as Seller</option>
+                            <option value="admin">Login as Super Admin</option>
+                        </select>
+                    </div>
+
+                    <div id="otpFormGroup">
+                        <div class="input-group">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="number" id="loginPhone" placeholder="10-Digit Mobile Number">
+                        </div>
+                        <div class="input-group">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="loginName" placeholder="Your Full Name">
+                        </div>
+                        <div class="input-group">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <input type="number" id="loginPin" placeholder="Delivery Pincode (e.g., 401303)">
+                        </div>
+                        <button class="btn-primary" onclick="sendOTP()">
+                            Get Secure OTP <i class="fa-solid fa-arrow-right" style="margin-left: 5px;"></i>
+                        </button>
+                    </div>
+
+                    <div id="adminFormGroup" class="hidden">
+                        <div class="input-group">
+                            <i class="fa-solid fa-id-badge"></i>
+                            <input type="text" id="adminId" placeholder="Admin ID">
+                        </div>
+                        <div class="input-group">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="adminPass" placeholder="Admin Password">
+                        </div>
+                        <button class="btn-primary" onclick="adminDirectLogin()">
+                            Login to Dashboard <i class="fa-solid fa-right-to-bracket" style="margin-left: 5px;"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <div id="loginStep2" class="hidden" style="text-align: center;">
+                    <i class="fa-solid fa-lock" style="font-size: 45px; color: #2d6a4f; margin-bottom: 15px;"></i>
+                    <h2 style="color: #1b4332; font-size: 24px;">Authentication</h2>
+                    <p style="font-size: 14px; color: gray; margin-bottom: 25px;">We've sent an OTP to <br><b id="displayPhone" style="color:#2d6a4f; font-size:16px;"></b></p>
+                    
+                    <div class="input-group">
+                        <i class="fa-solid fa-key"></i>
+                        <input type="number" id="enteredOTP" placeholder="• • • •" style="text-align: center; font-size: 24px; letter-spacing: 10px; font-weight:bold; padding-left:15px;">
+                    </div>
+                    
+                    <button class="btn-primary" onclick="verifyOTP()">Verify & Access Dashboard</button>
+                    <p style="font-size: 13px; color: #1a73e8; margin-top: 20px; cursor: pointer; font-weight:600;" onclick="location.reload()"><i class="fa-solid fa-arrow-left" style="margin-right: 5px;"></i> Modify Details</p>
+                </div>
             </div>
 
-            <div class="input-group">
-                <i class="fa-solid fa-user"></i>
-                <input type="text" id="loginName" placeholder="Your Full Name">
-            </div>
-
-            <div class="input-group">
-                <i class="fa-solid fa-location-dot"></i>
-                <input type="number" id="loginPin" placeholder="Delivery Pincode (e.g., 401303)">
-            </div>
-
-            <button class="btn-primary" onclick="sendOTP()">
-                Get Secure OTP <i class="fa-solid fa-arrow-right" style="margin-left: 5px;"></i>
-            </button>
-        </div>
-
-        <div class="glass-box hidden" id="loginStep2">
-            <i class="fa-solid fa-shield-halved" style="font-size: 40px; color: #2d6a4f; margin-bottom: 15px;"></i>
-            <h2 style="color: #1b4332;">Verify Details</h2>
-            <p style="font-size: 13px; color: gray; margin-bottom: 25px;">An OTP has been sent to <br><b id="displayPhone" style="color:#2d6a4f; font-size:16px;"></b></p>
-            
-            <div class="input-group">
-                <i class="fa-solid fa-key"></i>
-                <input type="number" id="enteredOTP" placeholder="• • • •" style="text-align: center; font-size: 24px; letter-spacing: 10px; font-weight:bold; padding-left:15px;">
-            </div>
-            
-            <button class="btn-primary" onclick="verifyOTP()">Verify & Secure Login</button>
-            <p style="font-size: 13px; color: #1a73e8; margin-top: 20px; cursor: pointer; font-weight:500;" onclick="location.reload()"><i class="fa-solid fa-arrow-left"></i> Go Back</p>
         </div>
     </div>
 
@@ -203,7 +233,7 @@
             <div id="c-shop" class="cust-tab">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <h1>Premium Plants</h1>
-                    <input type="text" id="searchBar" placeholder="Search..." style="width:200px; padding:8px; margin:0;" onkeyup="searchPlants()">
+                    <input type="text" id="searchBar" placeholder="Search plants..." style="width:200px; padding:10px; border-radius:8px; border:1px solid #ccc;" onkeyup="searchPlants()">
                 </div>
                 <div class="product-grid" id="plantsGrid"></div>
             </div>
@@ -223,7 +253,7 @@
             </div>
             <div id="c-profile" class="cust-tab hidden">
                 <h1>My Profile</h1>
-                <div class="glass-box" style="text-align:left; margin-top:20px;">
+                <div class="glass-box" style="text-align:left; margin-top:20px; box-shadow:none; border:1px solid #eee; width:100%;">
                     <p><b>Name:</b> <span id="p-name"></span></p>
                     <p><b>Phone:</b> <span id="p-phone"></span></p>
                     <p><b>Pincode:</b> <span id="p-pin"></span></p>
@@ -231,7 +261,7 @@
             </div>
             <div id="c-support" class="cust-tab hidden">
                 <h1>24/7 Support</h1>
-                <div class="glass-box" style="margin-top:20px;">
+                <div class="glass-box" style="margin-top:20px; box-shadow:none; border:1px solid #eee; width:100%;">
                     <i class="fa-solid fa-headset" style="font-size:40px; color:#2d6a4f; margin-bottom:10px;"></i>
                     <p>Call toll-free: <b>1800-GREEN-00</b></p>
                     <p style="font-size:12px; color:gray;">Our team resolves disputes within 2 hours.</p>
@@ -278,7 +308,7 @@
             </div>
             <div id="s-earnings" class="seller-tab hidden">
                 <h1>Earnings & Payout</h1>
-                <div class="glass-box" style="margin-top:20px;">
+                <div class="glass-box" style="margin-top:20px; box-shadow:none; border:1px solid #eee; width:100%; text-align:left;">
                     <h3>Next Payout: ₹<span id="s-payout">0</span></h3>
                     <p style="font-size:12px; color:gray;">Settlements happen every Monday to your registered bank account.</p>
                 </div>
@@ -323,7 +353,7 @@
             </div>
             <div id="a-settings" class="admin-tab hidden">
                 <h1>Platform Settings</h1>
-                <div class="glass-box" style="margin-top:20px; text-align:left;">
+                <div class="glass-box" style="margin-top:20px; text-align:left; box-shadow:none; border:1px solid #eee; width:100%;">
                     <p><b>Commission Rate:</b> 12% Per Sale</p>
                     <p><b>Logistics Partner:</b> Delhivery Enterprise</p>
                     <p><b>Serviceable Pincodes:</b> All India (28,000+)</p>
@@ -331,7 +361,7 @@
             </div>
             <div id="a-disputes" class="admin-tab hidden">
                 <h1>Active Disputes</h1>
-                <div class="glass-box" style="text-align:center; padding:50px;">
+                <div class="glass-box" style="text-align:center; padding:50px; box-shadow:none; border:1px solid #eee; width:100%;">
                     <i class="fa-solid fa-face-smile" style="font-size:40px; color:#55efc4; margin-bottom:10px;"></i>
                     <p>Zero active disputes! All operations smooth.</p>
                 </div>
@@ -368,7 +398,7 @@
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/SBI-logo.svg/1024px-SBI-logo.svg.png" style="width: 50px; margin-bottom: 15px;">
                 <h3 style="color: #333;">Bank Authentication</h3>
                 <p style="font-size: 12px; color: gray; margin-bottom: 20px;">Enter any 6-digit OTP to proceed</p>
-                <input type="number" id="fakePayOTP" placeholder="• • • • • •" style="text-align: center; font-size: 20px; letter-spacing: 5px; width:80%;">
+                <input type="number" id="fakePayOTP" placeholder="• • • • • •" style="text-align: center; font-size: 20px; letter-spacing: 5px; width:80%; padding:10px; border-radius:8px; border:1px solid #ccc;">
                 <button class="rzp-btn" style="background: #2874f0;" onclick="submitFakePayOTP()" id="payOtpBtn">Verify & Pay</button>
             </div>
             <div id="rzpSuccessState" class="hidden" style="text-align:center; padding: 60px 20px;">
@@ -409,16 +439,15 @@
             localStorage.setItem('gm_orders', JSON.stringify(db.orders));
         }
 
-        // --- 2. AUTHENTICATION & INITIALIZATION ---
+        // --- 2. AUTHENTICATION LOGIC ---
         window.onload = () => {
             init3D();
             if(currentUser) { loadDashboard(); } 
             else { 
                 document.getElementById('loginSystem').classList.remove('hidden'); 
-                gsap.from("#loginBox", {scale: 0.8, opacity: 0, duration: 0.6, ease: "back.out(1.7)"});
+                gsap.from("#loginWrapper", {y: 50, opacity: 0, duration: 0.8, ease: "power3.out"});
             }
             
-            // Live Update Engine (Syncs data every 2 seconds across tabs)
             setInterval(() => {
                 db.orders = JSON.parse(localStorage.getItem('gm_orders')) || [];
                 db.users = JSON.parse(localStorage.getItem('gm_users')) || [];
@@ -426,6 +455,19 @@
             }, 2000);
         };
 
+        // DYNAMIC FIELD TOGGLE
+        function toggleLoginType() {
+            let role = document.getElementById('userRole').value;
+            if(role === 'admin') {
+                document.getElementById('otpFormGroup').classList.add('hidden');
+                document.getElementById('adminFormGroup').classList.remove('hidden');
+            } else {
+                document.getElementById('otpFormGroup').classList.remove('hidden');
+                document.getElementById('adminFormGroup').classList.add('hidden');
+            }
+        }
+
+        // CUSTOMER / SELLER OTP LOGIN
         function sendOTP() {
             let phone = document.getElementById('loginPhone').value;
             let name = document.getElementById('loginName').value;
@@ -433,10 +475,14 @@
             
             if(phone.length !== 10 || !name || !pin) return alert("Please fill all details correctly!");
             
-            generatedOTP = Math.floor(1000 + Math.random() * 9000); // 4 digit OTP
+            generatedOTP = Math.floor(1000 + Math.random() * 9000); 
             document.getElementById('displayPhone').innerText = "+91 " + phone;
             document.getElementById('loginStep1').classList.add('hidden');
+            
+            if(window.innerWidth <= 768) { document.getElementById('heroSection').classList.add('hidden'); }
+            
             document.getElementById('loginStep2').classList.remove('hidden');
+            gsap.from("#loginStep2", {opacity: 0, scale: 0.9, duration: 0.4});
             
             alert(`💬 SENDER: GREENISH\nYour Login OTP is: ${generatedOTP}\nDo not share this with anyone.`);
         }
@@ -457,9 +503,30 @@
 
                 currentUser = userObj;
                 localStorage.setItem('gm_activeUser', JSON.stringify(currentUser));
-                document.getElementById('loginSystem').classList.add('hidden');
-                loadDashboard();
+                
+                gsap.to("#loginWrapper", {y: -50, opacity: 0, duration: 0.4, onComplete: () => {
+                    document.getElementById('loginSystem').classList.add('hidden');
+                    loadDashboard();
+                }});
             } else { alert("❌ Invalid OTP! Please check the alert box."); }
+        }
+
+        // ADMIN DIRECT ID/PASSWORD LOGIN
+        function adminDirectLogin() {
+            let adminId = document.getElementById('adminId').value;
+            let adminPass = document.getElementById('adminPass').value;
+
+            if(adminId === "Vivek02" && adminPass === "Vivek1234@") {
+                currentUser = { role: 'admin', name: 'Super Admin Vivek', phone: 'SYSTEM', pin: 'HQ' };
+                localStorage.setItem('gm_activeUser', JSON.stringify(currentUser));
+                
+                gsap.to("#loginWrapper", {y: -50, opacity: 0, duration: 0.4, onComplete: () => {
+                    document.getElementById('loginSystem').classList.add('hidden');
+                    loadDashboard();
+                }});
+            } else {
+                alert("❌ Unauthorized! Invalid Admin ID or Password.");
+            }
         }
 
         function logout() { localStorage.removeItem('gm_activeUser'); location.reload(); }
@@ -577,7 +644,6 @@
             };
             db.orders.push(newOrder); saveDB();
             
-            // Try saving to backend, if not working, ignore it (since local storage handles it)
             try { fetch('/api/commitTransaction', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(newOrder) }); } catch(e){}
             
             cart = []; document.getElementById('cartCount').innerText = "0"; renderCart();
@@ -607,7 +673,7 @@
                 let totalRev = db.orders.reduce((sum, o) => sum + parseInt(o.total), 0);
                 let pending = db.orders.filter(o => o.status !== 'Delivered').length;
                 document.getElementById('s-rev').innerText = totalRev;
-                document.getElementById('s-payout').innerText = totalRev; // Mocking payout logic
+                document.getElementById('s-payout').innerText = totalRev;
                 document.getElementById('s-pending').innerText = pending;
 
                 let oBody = document.getElementById('sellerOrderBody'); oBody.innerHTML = '';
